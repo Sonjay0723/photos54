@@ -27,22 +27,23 @@ public class User {
 		return albumList;
 	}
 	
-	public void addAlbum(String name) {
-		Album newAlbum = new Album(name);
+	public void addAlbum(Album newAlbum) {
 		albumList.add(newAlbum);
 		Comparator<Album> comparator = Comparator.comparing(Album::getTitle);
 		FXCollections.sort(albumList, comparator);
+		//TODO Add to files
 	}
 	
-	public void removeTag(Album thisAlbum) {
+	public void removeAlbum(String name) {
 		int position = 0;
 		for(int i=0; i<albumList.size(); i++) {
-			if(thisAlbum.equals(albumList.get(i))) {
+			if(name.toLowerCase().equals(albumList.get(i).getTitle().toLowerCase())) {
 				position = i;
 				break;
 			}
 		}
 		albumList.remove(position);
+		//TODO remove from files
 	}
 	
 	public Album getAlbum(String title) {

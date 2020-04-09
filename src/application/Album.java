@@ -9,7 +9,7 @@ import javafx.collections.ObservableList;
 public class Album {
 	
 	public String title;
-	public ObservableList<Image> imageList = FXCollections.observableArrayList();
+	public ObservableList<Picture> pictureList = FXCollections.observableArrayList();
 	
 	public Album(String title) {
 		this.title = title;
@@ -23,31 +23,34 @@ public class Album {
 		this.title = x;
 	}
 	
-	public ObservableList<Image> getImageList(){
-		return imageList;
+	public ObservableList<Picture> getPictureList(){
+		return pictureList;
 	}
 	
-	public void addImage(SerializableImage image, Calendar date, String caption, String imageName) {
-		Image newImage = new Image(image, date, caption, imageName);
-		imageList.add(newImage);
+	public void addPicture(Picture newPicture) {
+		//TODO add to files
+		pictureList.add(newPicture);
+		Comparator<Picture> comparator = Comparator.comparing(Picture::getPictureName);
+		FXCollections.sort(pictureList, comparator);
 	}
 	
-	public void removeImage(Image thisImage) {
+	public void removePicture(String thisPicture) {
+		//TODO remove to files
 		int position = 0;
-		for(int i=0; i<imageList.size(); i++) {
-			if(thisImage.equals(imageList.get(i))) {
+		for(int i=0; i<pictureList.size(); i++) {
+			if(thisPicture.equals(pictureList.get(i).getPictureName())) {
 				position = i;
 				break;
 			}
 		}
-		imageList.remove(position);
+		pictureList.remove(position);
 	}
 	
-	public Image getImage(String name) {
-		Image searchFor = null;
-		for(int i=0; i<this.imageList.size(); i++) {
-			if(this.imageList.get(i).getImageName().equals(name)) {
-				searchFor = this.imageList.get(i);
+	public Picture getPicture(String name) {
+		Picture searchFor = null;
+		for(int i=0; i<this.pictureList.size(); i++) {
+			if(this.pictureList.get(i).getPictureName().equals(name)) {
+				searchFor = this.pictureList.get(i);
 				break;
 			}
 		}

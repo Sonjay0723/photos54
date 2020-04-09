@@ -20,6 +20,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
@@ -34,13 +35,22 @@ public class AdminController {
 	@FXML private Button logoutBtn;
 	
 	@FXML private TextField usernameTxt;
+
+	public Stage primaryStage;
 	
-	public void start(Stage primaryStage) throws Exception {   
+	public void start(Stage primaryStage) throws Exception {  
 		
-		primaryStage.setTitle("Admin Page");
+		this.primaryStage = primaryStage;
 		
-		File fp = new File("usersList.txt");
+		File fp = new File("data/usersList.txt");
 		fp.createNewFile();
+		
+		/*
+		File allUsersDir = new File("data/Users");
+		if(!allUsersDir.exists()) {
+			allUsersDir.mkdir();
+		}
+		*/
 		
 		usersList.addAll(read(fp));
 		
@@ -56,19 +66,21 @@ public class AdminController {
 		}
 
 		addBtn.setOnAction(event->{
+			//TODO add to files
 			if(agreeOrDisagree(primaryStage, "Would you like to add this user to the list?")) {
 				add(usernameTxt.getText(), primaryStage);
 				try {
 					write(usersList, fp);
 				} catch (IOException e) {
 					e.printStackTrace();
-				}
+				}			
 			}
 			else
 				whatInfo();
 		});
 		
 		deleteBtn.setOnAction(event->{
+			//TODO remove from files
 			if(usersList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
 			else if(agreeOrDisagree(primaryStage, "Would you like to remove this user from the list?")){
@@ -78,7 +90,6 @@ public class AdminController {
 					try {
 						write(usersList, fp);
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -86,18 +97,19 @@ public class AdminController {
 		});
 		
 		logoutBtn.setOnAction(event->{
+			primaryStage.close();
+			
+			FXMLLoader loader = new FXMLLoader();
+	        loader.setLocation(getClass().getResource("/Display/Login.fxml"));
 			try {
-				FXMLLoader loader = new FXMLLoader();
-				loader.setLocation(getClass().getResource("/Display/login.fxml"));
-				AnchorPane root = (AnchorPane) loader.load();
-				
-				LoginController libraryController = loader.getController();
-				libraryController.start(primaryStage);
-				
-				Scene scene = new Scene(root);
-				primaryStage.setScene(scene);
-				primaryStage.setResizable(false);  
-				primaryStage.show();
+	            AnchorPane root = (AnchorPane)loader.load();
+	            AdminController loginView = loader.getController();
+	            Stage stage = new Stage();
+	            
+	            loginView.start(stage);
+	            Scene scene = new Scene(root);
+	            stage.setScene(scene);
+	            stage.show();
 	
 			} catch(Exception e) {
 				e.printStackTrace();
@@ -118,11 +130,15 @@ public class AdminController {
 		}
 			
 		if(usersList.isEmpty()) {
+			
+			newUser.addAlbum(addStockAlbum());
+			
 			usersList.add(newUser);
 			//select User
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(0);
 			whatInfo();
+			
 			return;
 		}
 		
@@ -131,6 +147,8 @@ public class AdminController {
 			for(int i=0; i<usersList.size(); i++) {
 				if(usersList.get(i).compareTo(newUser) > 0) {
 					if(i==0) {
+						newUser.addAlbum(addStockAlbum());
+						
 						usersList.add(0,newUser);
 						//select User
 						listView.setItems(usersList);
@@ -139,6 +157,9 @@ public class AdminController {
 						return;
 					}
 					else if(i>=usersList.size()) {
+						
+						newUser.addAlbum(addStockAlbum());
+						
 						usersList.add(newUser);
 						//select User
 						listView.setItems(usersList);
@@ -147,6 +168,9 @@ public class AdminController {
 						return;
 					}
 					else {
+						
+						newUser.addAlbum(addStockAlbum());
+						
 						usersList.add(i, newUser);
 						//select User
 						listView.setItems(usersList);
@@ -159,11 +183,15 @@ public class AdminController {
 					continue;
 				}
 			}
+			
+			newUser.addAlbum(addStockAlbum());
+			
 			usersList.add(newUser);
 			//select User
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(usersList.size()-1);
 			whatInfo();
+			
 			return;
 		}
 		
@@ -242,6 +270,28 @@ public class AdminController {
 		return false;
 	}
 	
+	//method to create a StockAlbum
+	public Album addStockAlbum() {
+		//Create stock Album
+		Album stockAlbum = new Album("stock");
+		String stockAlbumPath = "src/application";
+		
+		File photos;
+		for (int currentPhoto = 1; currentPhoto <= 5; currentPhoto++) {
+			photos = new File(stockAlbumPath + "/Img" + Integer.toString(currentPhoto) + ".jpg");
+			
+			Image image = new Image(photos.toURI().toString());
+			SerializableImage thisImage = new application.SerializableImage(image);
+			String name = photos.getName();
+			Calendar date = Calendar.getInstance();
+			date.setTimeInMillis(photos.lastModified());
+			Picture newPhoto = new application.Picture(thisImage, date, "Stock Photo", name);
+			stockAlbum.addPicture(newPhoto);
+		}
+		
+		return stockAlbum;
+	}
+	
 	//method to write to file(FROM SCRATCH)
 	private void write(ObservableList<User> Users, File fp) throws IOException {
 		if (fp.delete()) {
@@ -268,9 +318,8 @@ public class AdminController {
 		while (r1.hasNextLine()) {
 			
 			String username = r1.nextLine();
-			User newUser = new application.User(username);
 			
-			res.add(newUser);
+			res.add(new application.User(username));
 		}
 		r1.close();
 		return res;

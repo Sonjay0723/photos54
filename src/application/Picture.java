@@ -8,22 +8,22 @@ import java.util.Comparator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Image implements Serializable {
-	public SerializableImage image;
+public class Picture implements Serializable {
+	public SerializableImage picture;
 	public Calendar date;
 	public String caption;
-	public String imageName;
+	public String pictureName;
 	public ObservableList<Tag> tagList = FXCollections.observableArrayList();
 	
-	public Image(SerializableImage image, Calendar date, String caption, String imageName) {
-		this.image = image;
+	public Picture(SerializableImage picture, Calendar date, String caption, String pictureName) {
+		this.picture = picture;
 		this.date = date;
 		this.caption = caption;
-		this.imageName = imageName;
+		this.pictureName = pictureName;
 	}
 	
-	public SerializableImage getImage() {
-		return image;
+	public SerializableImage getPicture() {
+		return picture;
 	}
 	
 	public Calendar getDate() {
@@ -42,26 +42,27 @@ public class Image implements Serializable {
 		this.caption = x;
 	}
 	
-	public String getImageName() {
-		return imageName;
+	public String getPictureName() {
+		return pictureName;
 	}
 	
-	public void setImageName(String x) {
-		this.imageName = x;
+	public void setPictureName(String x) {
+		this.pictureName = x;
 	}
 	
 	public ObservableList<Tag> getTagList(){
 		return tagList;
 	}
 	
-	public void addTag(String name, String value) {
-		Tag newTag = new Tag(name,value);
+	public void addTag(Tag newTag) {
 		tagList.add(newTag);
 		Comparator<Tag> comparator = Comparator.comparing(Tag::toString);
 		FXCollections.sort(tagList, comparator);
+		//TODO add to file
 	}
 	
-	public void removeTag(Tag thisTag) {
+	public void removeTag(String name, String value) {
+		Tag thisTag = new Tag(name,value);
 		int position = 0;
 		for(int i=0; i<tagList.size(); i++) {
 			if(thisTag.equals(tagList.get(i))) {
@@ -70,9 +71,10 @@ public class Image implements Serializable {
 			}
 		}
 		tagList.remove(position);
+		//TODO remove from file
 	}
 	
-	public boolean equals(Image x) {
-		return this.imageName.toLowerCase().equals(x.imageName.toLowerCase());
+	public boolean equals(Picture x) {
+		return this.pictureName.toLowerCase().equals(x.pictureName.toLowerCase());
 	}
 }
