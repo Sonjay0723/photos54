@@ -1,12 +1,10 @@
 //Dhrishti Hazari and Jayson Pitta
-package Controllers;
+package controller;
 
-import java.awt.Label;
 import java.io.*;
 import java.util.*;
-import Display.*;
 
-import application.*;
+import model.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,8 +24,6 @@ import javafx.stage.Stage;
 
 public class AdminController {
 	
-	public ObservableList<User> usersList = FXCollections.observableArrayList();
-	
 	@FXML ListView<User> listView;
 	
 	@FXML private Button deleteBtn;
@@ -38,72 +34,56 @@ public class AdminController {
 
 	public Stage primaryStage;
 	
-	public void start(Stage primaryStage) throws Exception {  
+	public void start(Stage primaryStage, ArrayList<User> arrayUsersList) throws Exception {  
+		
+		ObservableList<User> usersList = FXCollections.observableArrayList(arrayUsersList);
 		
 		this.primaryStage = primaryStage;
-		
-		File fp = new File("data/usersList.txt");
-		fp.createNewFile();
-		
-		/*
-		File allUsersDir = new File("data/Users");
-		if(!allUsersDir.exists()) {
-			allUsersDir.mkdir();
-		}
-		*/
-		
-		usersList.addAll(read(fp));
 		
 		listView
 	        .getSelectionModel()
 	        .selectedIndexProperty()
-	        .addListener((obs, oldVal, newVal) -> whatInfo());
+	        .addListener((obs, oldVal, newVal) -> whatInfo(usersList));
 
 		if(!usersList.isEmpty()) {
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(0);
-			whatInfo();
+			whatInfo(usersList);
 		}
 
 		addBtn.setOnAction(event->{
-			//TODO add to files
+			if(usernameTxt.getText().isEmpty())
+				popUpMessage(primaryStage, "The Username field is Empty!");
 			if(agreeOrDisagree(primaryStage, "Would you like to add this user to the list?")) {
-				add(usernameTxt.getText(), primaryStage);
-				try {
-					write(usersList, fp);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}			
+				//Creating User object
+				User newUser = new model.User(usernameTxt.getText());
+				add(newUser, primaryStage, usersList);
+				saveData();
 			}
 			else
-				whatInfo();
+				whatInfo(usersList);
 		});
 		
 		deleteBtn.setOnAction(event->{
-			//TODO remove from files
 			if(usersList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
 			else if(agreeOrDisagree(primaryStage, "Would you like to remove this user from the list?")){
 				if (!usersList.isEmpty()){
 					User currUser = usersList.get((listView.getSelectionModel().getSelectedIndex()));
-					delete(currUser);
-					try {
-						write(usersList, fp);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					delete(currUser, usersList);
 				}
 			}
+			saveData();
 		});
 		
 		logoutBtn.setOnAction(event->{
-			primaryStage.close();
+			this.primaryStage.close();
 			
 			FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(getClass().getResource("/Display/Login.fxml"));
+	        loader.setLocation(getClass().getResource("/view/Login.fxml"));
 			try {
 	            AnchorPane root = (AnchorPane)loader.load();
-	            AdminController loginView = loader.getController();
+	            LoginController loginView = loader.getController();
 	            Stage stage = new Stage();
 	            
 	            loginView.start(stage);
@@ -118,32 +98,23 @@ public class AdminController {
 	}
 	
 	
-	public void add(String username, Stage primaryStage){
-		
-		//Creating User object
-		User newUser = new application.User(username);
-		
-		//checking if fields are entered incorrectly
-		if(username.isEmpty()) {
-			popUpMessage(primaryStage, "The Username field is Empty!");
-			return;
-		}
+	public void add(User newUser, Stage primaryStage, ObservableList<User> usersList){
 			
 		if(usersList.isEmpty()) {
 			
 			newUser.addAlbum(addStockAlbum());
 			
 			usersList.add(newUser);
-			//select User
+		
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(0);
-			whatInfo();
+			whatInfo(usersList);
 			
 			return;
 		}
 		
 		//adding in appropriate location
-		else if (!inList(newUser, primaryStage)) {
+		else if (!inList(newUser, primaryStage, usersList)) {
 			for(int i=0; i<usersList.size(); i++) {
 				if(usersList.get(i).compareTo(newUser) > 0) {
 					if(i==0) {
@@ -153,7 +124,7 @@ public class AdminController {
 						//select User
 						listView.setItems(usersList);
 						listView.getSelectionModel().select(0);
-						whatInfo();
+						whatInfo(usersList);
 						return;
 					}
 					else if(i>=usersList.size()) {
@@ -164,7 +135,7 @@ public class AdminController {
 						//select User
 						listView.setItems(usersList);
 						listView.getSelectionModel().select(usersList.size()-1);
-						whatInfo();
+						whatInfo(usersList);
 						return;
 					}
 					else {
@@ -175,7 +146,7 @@ public class AdminController {
 						//select User
 						listView.setItems(usersList);
 						listView.getSelectionModel().select(i);
-						whatInfo();
+						whatInfo(usersList);
 						return;
 					}
 				}
@@ -190,7 +161,7 @@ public class AdminController {
 			//select User
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(usersList.size()-1);
-			whatInfo();
+			whatInfo(usersList);
 			
 			return;
 		}
@@ -198,7 +169,7 @@ public class AdminController {
 		return;
 	}
 	
-	public void delete(User currentUser){
+	public void delete(User currentUser, ObservableList<User> usersList){
 		
 		//delete current User
 		int currIndex = listView.getSelectionModel().getSelectedIndex();
@@ -209,11 +180,11 @@ public class AdminController {
 		if(!usersList.isEmpty()) {
 			if(usersList.size() <= currIndex) {
 				listView.getSelectionModel().select(currIndex-1);
-				whatInfo();
+				whatInfo(usersList);
 			}
 			else {
 				listView.getSelectionModel().select(currIndex);
-				whatInfo();
+				whatInfo(usersList);
 			}
 		}
 		else 
@@ -224,7 +195,7 @@ public class AdminController {
 	}
 	
 	//method to check if same name+artist is already in usersList
-	public boolean inList(User search, Stage primaryStage){
+	public boolean inList(User search, Stage primaryStage, ObservableList<User> usersList){
 		if(usersList.isEmpty())
 			return false;
 		for(int i=0; i<usersList.size(); i++) {
@@ -237,7 +208,7 @@ public class AdminController {
 	}
 	
 	//method to display values
-	public void whatInfo() {
+	public void whatInfo(ObservableList<User> usersList) {
 		int currentIndex = listView.getSelectionModel().getSelectedIndex();
 		User currUser = usersList.get(currentIndex);
 		usernameTxt.setText(currUser.getUsername());
@@ -274,55 +245,36 @@ public class AdminController {
 	public Album addStockAlbum() {
 		//Create stock Album
 		Album stockAlbum = new Album("stock");
-		String stockAlbumPath = "src/application";
+		String stockAlbumPath = "src/model";
 		
 		File photos;
 		for (int currentPhoto = 1; currentPhoto <= 5; currentPhoto++) {
 			photos = new File(stockAlbumPath + "/Img" + Integer.toString(currentPhoto) + ".jpg");
 			
 			Image image = new Image(photos.toURI().toString());
-			SerializableImage thisImage = new application.SerializableImage(image);
+			SerializableImage thisImage = new model.SerializableImage(image);
 			String name = photos.getName();
 			Calendar date = Calendar.getInstance();
 			date.setTimeInMillis(photos.lastModified());
-			Picture newPhoto = new application.Picture(thisImage, date, "Stock Photo", name);
+			Picture newPhoto = new model.Picture(thisImage, date, "Stock Photo", name);
 			stockAlbum.addPicture(newPhoto);
 		}
 		
 		return stockAlbum;
 	}
 	
-	//method to write to file(FROM SCRATCH)
-	private void write(ObservableList<User> Users, File fp) throws IOException {
-		if (fp.delete()) {
-			fp.createNewFile();
-		}
-		
-		if (Users.size() == 0)
-			return;
-		
-		PrintWriter  w1 = new PrintWriter(fp);
-		for (int i = 0; i < Users.size(); i++) {
-			String str = Users.get(i).getUsername();
-			w1.write(str);
-		}
-		w1.close();
-		return;
-	}
-	
-	//Method to read from file in order to load in previous information
-	private ObservableList<User> read(File fp) throws FileNotFoundException, IOException, ClassNotFoundException {
-		Scanner r1 = new Scanner(fp);
-		ObservableList<User> res = FXCollections.observableArrayList();
-		
-		while (r1.hasNextLine()) {
+	//method to save User data
+	private void saveData() {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 			
-			String username = r1.nextLine();
+			objectOutputStream.writeObject(new ArrayList<>(Arrays.asList(listView.getItems().toArray())));
 			
-			res.add(new application.User(username));
+			objectOutputStream.close();
+			fileOutputStream.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
-		r1.close();
-		return res;
 	}
-	
 }

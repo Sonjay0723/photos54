@@ -1,15 +1,25 @@
-package application;
+package model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Objects;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
-public class User {
+public class User implements Serializable{
+	
+	private static final long serialVersionUID = 8177923271139908648L;
 	public String username;
-	public ObservableList<Album> albumList = FXCollections.observableArrayList();
+	public ArrayList<Album> albumList = new ArrayList<Album>();
 	
 	public User(String username) {
 		this.username = username;
@@ -23,15 +33,14 @@ public class User {
 		this.username = x;
 	}
 	
-	public ObservableList<Album> getAlbumList(){
-		return albumList;
+	public ArrayList<Album> getAlbumList(){
+		return this.albumList;
 	}
 	
 	public void addAlbum(Album newAlbum) {
 		albumList.add(newAlbum);
 		Comparator<Album> comparator = Comparator.comparing(Album::getTitle);
-		FXCollections.sort(albumList, comparator);
-		//TODO Add to files
+		albumList.sort(comparator);
 	}
 	
 	public void removeAlbum(String name) {
@@ -66,7 +75,16 @@ public class User {
 		return curr.getUsername().toLowerCase().equals(username.toLowerCase());
 	}
 	
+	@Override
+	public int hashCode() {
+		return Objects.hash(username);
+	}
+	
 	public int compareTo(User currUser) {
 		return this.getUsername().toLowerCase().compareTo(currUser.getUsername().toLowerCase());
+	}
+	
+	public String toString() {
+		return this.getUsername();
 	}
 }

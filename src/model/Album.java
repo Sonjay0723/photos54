@@ -1,15 +1,19 @@
-package application;
+package model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Objects;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Album {
+public class Album implements Serializable {
 	
+	private static final long serialVersionUID = 1891567810783724951L;
 	public String title;
-	public ObservableList<Picture> pictureList = FXCollections.observableArrayList();
+	public ArrayList<Picture> pictureList = new ArrayList<Picture>();
 	
 	public Album(String title) {
 		this.title = title;
@@ -23,7 +27,7 @@ public class Album {
 		this.title = x;
 	}
 	
-	public ObservableList<Picture> getPictureList(){
+	public ArrayList<Picture> getPictureList(){
 		return pictureList;
 	}
 	
@@ -31,7 +35,7 @@ public class Album {
 		//TODO add to files
 		pictureList.add(newPicture);
 		Comparator<Picture> comparator = Comparator.comparing(Picture::getPictureName);
-		FXCollections.sort(pictureList, comparator);
+		pictureList.sort(comparator);
 	}
 	
 	public void removePicture(String thisPicture) {
@@ -66,7 +70,16 @@ public class Album {
 		return curr.getTitle().toLowerCase().equals(title.toLowerCase());
 	}
 	
+	@Override
+	 public int hashCode() {
+		 return Objects.hash(title);
+	 }
+	
 	public int compareTo(Album currAlbum) {
 		return this.getTitle().toLowerCase().compareTo(currAlbum.getTitle().toLowerCase());
+	}
+	
+	public String toString() {
+		return this.getTitle();
 	}
 }

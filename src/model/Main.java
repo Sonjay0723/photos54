@@ -1,12 +1,12 @@
-package application;
+package model;
 	
 import javafx.application.Application;
 import javafx.stage.Stage;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.fxml.*;
-import Controllers.*;
-import Display.*;
+import controller.*;
+import view.*;
 
 
 public class Main extends Application {
@@ -14,7 +14,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) throws Exception {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/Display/Login.fxml"));
+			loader.setLocation(getClass().getResource("/view/Login.fxml"));
 			AnchorPane root = (AnchorPane) loader.load();
 			
 			LoginController libraryController = loader.getController();
