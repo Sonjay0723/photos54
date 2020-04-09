@@ -1,4 +1,4 @@
-package application;
+package model;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -9,6 +9,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class Picture implements Serializable {
+	
+	private static final long serialVersionUID = 6955723612371190680L;
 	public SerializableImage picture;
 	public Calendar date;
 	public String caption;

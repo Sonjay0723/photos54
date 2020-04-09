@@ -13,7 +13,7 @@
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.control.TextField?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="445.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.LoginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="445.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.LoginController">
    <children>
       <TextField fx:id="username" layoutX="134.0" layoutY="209.0" prefHeight="27.0" prefWidth="360.0" promptText="Enter Username" style="-fx-background-color: #800000;" />
       <Text fill="#da1111" layoutX="243.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="20.0" text="Login Page" textAlignment="CENTER" wrappingWidth="142.36067962646484">

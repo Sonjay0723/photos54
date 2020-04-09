@@ -1,13 +1,16 @@
-package application;
+package model;
 
 import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Objects;
+import java.io.Serializable;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Album {
+public class Album implements Serializable{
 	
+	private static final long serialVersionUID = 1891567810783724951L;
 	public String title;
 	public ObservableList<Picture> pictureList = FXCollections.observableArrayList();
 	
@@ -66,7 +69,16 @@ public class Album {
 		return curr.getTitle().toLowerCase().equals(title.toLowerCase());
 	}
 	
+	@Override
+	 public int hashCode() {
+		 return Objects.hash(title);
+	 }
+	
 	public int compareTo(Album currAlbum) {
 		return this.getTitle().toLowerCase().compareTo(currAlbum.getTitle().toLowerCase());
+	}
+	
+	public String toString() {
+		return this.getTitle();
 	}
 }

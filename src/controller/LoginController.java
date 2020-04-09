@@ -1,11 +1,11 @@
-package Controllers;
+package controller;
 
 import java.io.*;
 import java.util.*;
 import javafx.fxml.*;
-import Display.*;
+import view.*;
 
-import application.*;
+import model.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -38,6 +38,8 @@ public class LoginController {
 	
 	public void start(Stage primaryStage) {
 		
+		//TODO load all data into appropriate fields starting from User folder
+		
 		this.primaryStage = primaryStage;
 		
 		//create base directory if it does not exist
@@ -55,27 +57,26 @@ public class LoginController {
 		
 		//Create stock Album if it does not exist
 		User stockUser = new User("stock");
+		//TODO add to usersList
 		String stockUserPath = "data/Users/stock";
 		File stockUserFile = new File(stockUserPath);
 		
 		if(!stockUserFile.exists()) {
 			Album stockAlbum = new Album("stock");
-			String stockAlbumPath = "src/application";
+			String stockAlbumPath = "src/model";
 			
 			for (int currentPhoto = 1; currentPhoto <= 5; currentPhoto++) {
 				File photos = new File(stockAlbumPath + "/Img" + Integer.toString(currentPhoto) + ".jpg");
 				
 				Image image = new Image(photos.toURI().toString());
-				SerializableImage thisImage = new application.SerializableImage(image);
+				SerializableImage thisImage = new model.SerializableImage(image);
 				String name = photos.getName();
 				Calendar date = Calendar.getInstance();
 				date.setTimeInMillis(photos.lastModified());
-				Picture newPhoto = new application.Picture(thisImage, date, "Stock Photo", name);
+				Picture newPhoto = new model.Picture(thisImage, date, "Stock Photo", name);
 				stockAlbum.addPicture(newPhoto);
 			}
 			stockUser.addAlbum(stockAlbum);
-			
-			//TODO Load album into files
 		}
 		
 		enter.setOnAction(event->{
@@ -99,16 +100,16 @@ public class LoginController {
 		
 		//if user is admin, redirect to admin
 		if(usernameTxt.toLowerCase().equals("admin")) {
-			primaryStage.close();
+			this.primaryStage.close();
 			
 			FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(getClass().getResource("/Display/Admin.fxml"));
+	        loader.setLocation(getClass().getResource("/view/Admin.fxml"));
 			try {
 	            AnchorPane root = (AnchorPane)loader.load();
-	            AdminController adminView = loader.getController();
+	            AdminController loginView = loader.getController();
 	            Stage stage = new Stage();
 	            
-	            adminView.start(stage);
+	            loginView.start(stage);
 	            Scene scene = new Scene(root);
 	            stage.setScene(scene);
 	            stage.show();
@@ -130,18 +131,19 @@ public class LoginController {
 		
 		//if the user does exist, redirect to specific user page
 		else {
+			this.primaryStage.close();
+			
+			FXMLLoader loader = new FXMLLoader();
+	        loader.setLocation(getClass().getResource("/view/UserName.fxml"));
 			try {
-				FXMLLoader loader = new FXMLLoader();
-				loader.setLocation(getClass().getResource("/Display/UserName.fxml"));
-				AnchorPane root = (AnchorPane) loader.load();
-				
-				UserController libraryController = loader.getController();
-				libraryController.start(primaryStage, usernameTxt);
-				
-				Scene scene = new Scene(root);
-				primaryStage.setScene(scene);
-				primaryStage.setResizable(false);  
-				primaryStage.show();
+	            AnchorPane root = (AnchorPane)loader.load();
+	            UserController userView = loader.getController();
+	            Stage stage = new Stage();
+	            
+	            userView.start(stage, usernameTxt);
+	            Scene scene = new Scene(root);
+	            stage.setScene(scene);
+	            stage.show();
 	
 			} catch(Exception e) {
 				e.printStackTrace();

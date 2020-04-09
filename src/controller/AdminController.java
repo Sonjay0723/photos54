@@ -1,15 +1,21 @@
 //Dhrishti Hazari and Jayson Pitta
-package Controllers;
+package controller;
 
 import java.awt.Label;
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
-import Display.*;
 
-import application.*;
+import javax.imageio.ImageIO;
+
+import view.*;
+
+import model.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -45,13 +51,6 @@ public class AdminController {
 		File fp = new File("data/usersList.txt");
 		fp.createNewFile();
 		
-		/*
-		File allUsersDir = new File("data/Users");
-		if(!allUsersDir.exists()) {
-			allUsersDir.mkdir();
-		}
-		*/
-		
 		usersList.addAll(read(fp));
 		
 		listView
@@ -66,44 +65,49 @@ public class AdminController {
 		}
 
 		addBtn.setOnAction(event->{
-			//TODO add to files
+			if(usernameTxt.getText().isEmpty())
+				popUpMessage(primaryStage, "The Username field is Empty!");
 			if(agreeOrDisagree(primaryStage, "Would you like to add this user to the list?")) {
-				add(usernameTxt.getText(), primaryStage);
+				//Creating User object
+				User newUser = new model.User(usernameTxt.getText());
+				add(newUser, primaryStage);
 				try {
 					write(usersList, fp);
 				} catch (IOException e) {
 					e.printStackTrace();
-				}			
+				}
 			}
 			else
 				whatInfo();
 		});
 		
 		deleteBtn.setOnAction(event->{
-			//TODO remove from files
 			if(usersList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
 			else if(agreeOrDisagree(primaryStage, "Would you like to remove this user from the list?")){
 				if (!usersList.isEmpty()){
 					User currUser = usersList.get((listView.getSelectionModel().getSelectedIndex()));
+					String currUserName = currUser.getUsername();
 					delete(currUser);
 					try {
 						write(usersList, fp);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+					File toDelete = new File("data/Users/"+currUserName);
+					deleteDirectory(toDelete);
 				}
 			}
 		});
 		
 		logoutBtn.setOnAction(event->{
-			primaryStage.close();
+			this.primaryStage.close();
 			
 			FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(getClass().getResource("/Display/Login.fxml"));
+	        loader.setLocation(getClass().getResource("/view/Login.fxml"));
 			try {
 	            AnchorPane root = (AnchorPane)loader.load();
-	            AdminController loginView = loader.getController();
+	            LoginController loginView = loader.getController();
 	            Stage stage = new Stage();
 	            
 	            loginView.start(stage);
@@ -118,22 +122,14 @@ public class AdminController {
 	}
 	
 	
-	public void add(String username, Stage primaryStage){
-		
-		//Creating User object
-		User newUser = new application.User(username);
-		
-		//checking if fields are entered incorrectly
-		if(username.isEmpty()) {
-			popUpMessage(primaryStage, "The Username field is Empty!");
-			return;
-		}
+	public void add(User newUser, Stage primaryStage){
 			
 		if(usersList.isEmpty()) {
 			
 			newUser.addAlbum(addStockAlbum());
 			
 			usersList.add(newUser);
+		
 			//select User
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(0);
@@ -274,18 +270,18 @@ public class AdminController {
 	public Album addStockAlbum() {
 		//Create stock Album
 		Album stockAlbum = new Album("stock");
-		String stockAlbumPath = "src/application";
+		String stockAlbumPath = "src/model";
 		
 		File photos;
 		for (int currentPhoto = 1; currentPhoto <= 5; currentPhoto++) {
 			photos = new File(stockAlbumPath + "/Img" + Integer.toString(currentPhoto) + ".jpg");
 			
 			Image image = new Image(photos.toURI().toString());
-			SerializableImage thisImage = new application.SerializableImage(image);
+			SerializableImage thisImage = new model.SerializableImage(image);
 			String name = photos.getName();
 			Calendar date = Calendar.getInstance();
 			date.setTimeInMillis(photos.lastModified());
-			Picture newPhoto = new application.Picture(thisImage, date, "Stock Photo", name);
+			Picture newPhoto = new model.Picture(thisImage, date, "Stock Photo", name);
 			stockAlbum.addPicture(newPhoto);
 		}
 		
@@ -293,6 +289,7 @@ public class AdminController {
 	}
 	
 	//method to write to file(FROM SCRATCH)
+	//TODO use FileOutputStream
 	private void write(ObservableList<User> Users, File fp) throws IOException {
 		if (fp.delete()) {
 			fp.createNewFile();
@@ -304,7 +301,7 @@ public class AdminController {
 		PrintWriter  w1 = new PrintWriter(fp);
 		for (int i = 0; i < Users.size(); i++) {
 			String str = Users.get(i).getUsername();
-			w1.write(str);
+			w1.write(str+"\n");
 		}
 		w1.close();
 		return;
@@ -316,13 +313,22 @@ public class AdminController {
 		ObservableList<User> res = FXCollections.observableArrayList();
 		
 		while (r1.hasNextLine()) {
-			
 			String username = r1.nextLine();
 			
-			res.add(new application.User(username));
+			res.add(new model.User(username));
 		}
 		r1.close();
 		return res;
-	}
+	}	
 	
+	//Method to delete File
+	private void deleteDirectory(File toDelete) {
+		if(toDelete.isDirectory()) {
+			File[] children = toDelete.listFiles();
+			for(int i=0; i< children.length; i++) {
+				deleteDirectory(children[i]);
+			}
+		}
+		toDelete.delete();
+	}
 }
