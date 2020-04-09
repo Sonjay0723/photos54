@@ -20,6 +20,8 @@ public class Picture implements Serializable {
 		this.date = date;
 		this.caption = caption;
 		this.pictureName = pictureName;
+		
+		this.date.set(Calendar.MILLISECOND, 0);
 	}
 	
 	public SerializableImage getPicture() {
