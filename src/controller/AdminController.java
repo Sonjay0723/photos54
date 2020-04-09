@@ -1,21 +1,13 @@
 //Dhrishti Hazari and Jayson Pitta
 package controller;
 
-import java.awt.Label;
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-
-import javax.imageio.ImageIO;
-
-import view.*;
 
 import model.*;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -32,8 +24,6 @@ import javafx.stage.Stage;
 
 public class AdminController {
 	
-	public ObservableList<User> usersList = FXCollections.observableArrayList();
-	
 	@FXML ListView<User> listView;
 	
 	@FXML private Button deleteBtn;
@@ -44,24 +34,21 @@ public class AdminController {
 
 	public Stage primaryStage;
 	
-	public void start(Stage primaryStage) throws Exception {  
+	public void start(Stage primaryStage, ArrayList<User> arrayUsersList) throws Exception {  
+		
+		ObservableList<User> usersList = FXCollections.observableArrayList(arrayUsersList);
 		
 		this.primaryStage = primaryStage;
-		
-		File fp = new File("data/usersList.txt");
-		fp.createNewFile();
-		
-		usersList.addAll(read(fp));
 		
 		listView
 	        .getSelectionModel()
 	        .selectedIndexProperty()
-	        .addListener((obs, oldVal, newVal) -> whatInfo());
+	        .addListener((obs, oldVal, newVal) -> whatInfo(usersList));
 
 		if(!usersList.isEmpty()) {
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(0);
-			whatInfo();
+			whatInfo(usersList);
 		}
 
 		addBtn.setOnAction(event->{
@@ -70,15 +57,11 @@ public class AdminController {
 			if(agreeOrDisagree(primaryStage, "Would you like to add this user to the list?")) {
 				//Creating User object
 				User newUser = new model.User(usernameTxt.getText());
-				add(newUser, primaryStage);
-				try {
-					write(usersList, fp);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				add(newUser, primaryStage, usersList);
+				saveData();
 			}
 			else
-				whatInfo();
+				whatInfo(usersList);
 		});
 		
 		deleteBtn.setOnAction(event->{
@@ -87,17 +70,10 @@ public class AdminController {
 			else if(agreeOrDisagree(primaryStage, "Would you like to remove this user from the list?")){
 				if (!usersList.isEmpty()){
 					User currUser = usersList.get((listView.getSelectionModel().getSelectedIndex()));
-					String currUserName = currUser.getUsername();
-					delete(currUser);
-					try {
-						write(usersList, fp);
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					File toDelete = new File("data/Users/"+currUserName);
-					deleteDirectory(toDelete);
+					delete(currUser, usersList);
 				}
 			}
+			saveData();
 		});
 		
 		logoutBtn.setOnAction(event->{
@@ -122,7 +98,7 @@ public class AdminController {
 	}
 	
 	
-	public void add(User newUser, Stage primaryStage){
+	public void add(User newUser, Stage primaryStage, ObservableList<User> usersList){
 			
 		if(usersList.isEmpty()) {
 			
@@ -130,16 +106,15 @@ public class AdminController {
 			
 			usersList.add(newUser);
 		
-			//select User
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(0);
-			whatInfo();
+			whatInfo(usersList);
 			
 			return;
 		}
 		
 		//adding in appropriate location
-		else if (!inList(newUser, primaryStage)) {
+		else if (!inList(newUser, primaryStage, usersList)) {
 			for(int i=0; i<usersList.size(); i++) {
 				if(usersList.get(i).compareTo(newUser) > 0) {
 					if(i==0) {
@@ -149,7 +124,7 @@ public class AdminController {
 						//select User
 						listView.setItems(usersList);
 						listView.getSelectionModel().select(0);
-						whatInfo();
+						whatInfo(usersList);
 						return;
 					}
 					else if(i>=usersList.size()) {
@@ -160,7 +135,7 @@ public class AdminController {
 						//select User
 						listView.setItems(usersList);
 						listView.getSelectionModel().select(usersList.size()-1);
-						whatInfo();
+						whatInfo(usersList);
 						return;
 					}
 					else {
@@ -171,7 +146,7 @@ public class AdminController {
 						//select User
 						listView.setItems(usersList);
 						listView.getSelectionModel().select(i);
-						whatInfo();
+						whatInfo(usersList);
 						return;
 					}
 				}
@@ -186,7 +161,7 @@ public class AdminController {
 			//select User
 			listView.setItems(usersList);
 			listView.getSelectionModel().select(usersList.size()-1);
-			whatInfo();
+			whatInfo(usersList);
 			
 			return;
 		}
@@ -194,7 +169,7 @@ public class AdminController {
 		return;
 	}
 	
-	public void delete(User currentUser){
+	public void delete(User currentUser, ObservableList<User> usersList){
 		
 		//delete current User
 		int currIndex = listView.getSelectionModel().getSelectedIndex();
@@ -205,11 +180,11 @@ public class AdminController {
 		if(!usersList.isEmpty()) {
 			if(usersList.size() <= currIndex) {
 				listView.getSelectionModel().select(currIndex-1);
-				whatInfo();
+				whatInfo(usersList);
 			}
 			else {
 				listView.getSelectionModel().select(currIndex);
-				whatInfo();
+				whatInfo(usersList);
 			}
 		}
 		else 
@@ -220,7 +195,7 @@ public class AdminController {
 	}
 	
 	//method to check if same name+artist is already in usersList
-	public boolean inList(User search, Stage primaryStage){
+	public boolean inList(User search, Stage primaryStage, ObservableList<User> usersList){
 		if(usersList.isEmpty())
 			return false;
 		for(int i=0; i<usersList.size(); i++) {
@@ -233,7 +208,7 @@ public class AdminController {
 	}
 	
 	//method to display values
-	public void whatInfo() {
+	public void whatInfo(ObservableList<User> usersList) {
 		int currentIndex = listView.getSelectionModel().getSelectedIndex();
 		User currUser = usersList.get(currentIndex);
 		usernameTxt.setText(currUser.getUsername());
@@ -288,47 +263,18 @@ public class AdminController {
 		return stockAlbum;
 	}
 	
-	//method to write to file(FROM SCRATCH)
-	//TODO use FileOutputStream
-	private void write(ObservableList<User> Users, File fp) throws IOException {
-		if (fp.delete()) {
-			fp.createNewFile();
-		}
-		
-		if (Users.size() == 0)
-			return;
-		
-		PrintWriter  w1 = new PrintWriter(fp);
-		for (int i = 0; i < Users.size(); i++) {
-			String str = Users.get(i).getUsername();
-			w1.write(str+"\n");
-		}
-		w1.close();
-		return;
-	}
-	
-	//Method to read from file in order to load in previous information
-	private ObservableList<User> read(File fp) throws FileNotFoundException, IOException, ClassNotFoundException {
-		Scanner r1 = new Scanner(fp);
-		ObservableList<User> res = FXCollections.observableArrayList();
-		
-		while (r1.hasNextLine()) {
-			String username = r1.nextLine();
+	//method to save User data
+	private void saveData() {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 			
-			res.add(new model.User(username));
+			objectOutputStream.writeObject(new ArrayList<>(Arrays.asList(listView.getItems().toArray())));
+			
+			objectOutputStream.close();
+			fileOutputStream.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
 		}
-		r1.close();
-		return res;
-	}	
-	
-	//Method to delete File
-	private void deleteDirectory(File toDelete) {
-		if(toDelete.isDirectory()) {
-			File[] children = toDelete.listFiles();
-			for(int i=0; i< children.length; i++) {
-				deleteDirectory(children[i]);
-			}
-		}
-		toDelete.delete();
 	}
 }

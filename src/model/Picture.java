@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +16,7 @@ public class Picture implements Serializable {
 	public Calendar date;
 	public String caption;
 	public String pictureName;
-	public ObservableList<Tag> tagList = FXCollections.observableArrayList();
+	public ArrayList<Tag> tagList = new ArrayList<Tag>();
 	
 	public Picture(SerializableImage picture, Calendar date, String caption, String pictureName) {
 		this.picture = picture;
@@ -52,14 +53,14 @@ public class Picture implements Serializable {
 		this.pictureName = x;
 	}
 	
-	public ObservableList<Tag> getTagList(){
+	public ArrayList<Tag> getTagList(){
 		return tagList;
 	}
 	
 	public void addTag(Tag newTag) {
 		tagList.add(newTag);
 		Comparator<Tag> comparator = Comparator.comparing(Tag::toString);
-		FXCollections.sort(tagList, comparator);
+		tagList.sort(comparator);
 		//TODO add to file
 	}
 	

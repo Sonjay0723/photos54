@@ -1,18 +1,19 @@
 package model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Objects;
-import java.io.Serializable;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Album implements Serializable{
+public class Album implements Serializable {
 	
 	private static final long serialVersionUID = 1891567810783724951L;
 	public String title;
-	public ObservableList<Picture> pictureList = FXCollections.observableArrayList();
+	public ArrayList<Picture> pictureList = new ArrayList<Picture>();
 	
 	public Album(String title) {
 		this.title = title;
@@ -26,7 +27,7 @@ public class Album implements Serializable{
 		this.title = x;
 	}
 	
-	public ObservableList<Picture> getPictureList(){
+	public ArrayList<Picture> getPictureList(){
 		return pictureList;
 	}
 	
@@ -34,7 +35,7 @@ public class Album implements Serializable{
 		//TODO add to files
 		pictureList.add(newPicture);
 		Comparator<Picture> comparator = Comparator.comparing(Picture::getPictureName);
-		FXCollections.sort(pictureList, comparator);
+		pictureList.sort(comparator);
 	}
 	
 	public void removePicture(String thisPicture) {

@@ -2,17 +2,11 @@ package controller;
 
 import java.io.*;
 import java.util.*;
-import javafx.fxml.*;
-import view.*;
 
 import model.*;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,7 +14,6 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
@@ -32,36 +25,33 @@ public class LoginController {
 	@FXML private Button exit;
 	
 	//this is the path to the file where user info should be stored
-	private final String path = "data";
+	private String path = "data";
 	
 	public Stage primaryStage;
 	
+	ArrayList<User> users;
+	
 	public void start(Stage primaryStage) {
-		
-		//TODO load all data into appropriate fields starting from User folder
 		
 		this.primaryStage = primaryStage;
 		
 		//create base directory if it does not exist
 		File baseDir = new File(path);
+		
 		if(!baseDir.exists()) {
-			baseDir.mkdirs();
-		}
-		
-		//create User's directory if it does not exist
-		String userDirPath = path+"/Users";
-		File userDir = new File(userDirPath);
-		if(!userDir.exists()) {
-			userDir.mkdir();
-		}
-		
-		//Create stock Album if it does not exist
-		User stockUser = new User("stock");
-		//TODO add to usersList
-		String stockUserPath = "data/Users/stock";
-		File stockUserFile = new File(stockUserPath);
-		
-		if(!stockUserFile.exists()) {
+			
+			baseDir.mkdir();
+			
+			path+="/dat";
+			
+			File baseFile = new File(path); 
+			
+			try {
+				baseFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			Album stockAlbum = new Album("stock");
 			String stockAlbumPath = "src/model";
 			
@@ -76,7 +66,23 @@ public class LoginController {
 				Picture newPhoto = new model.Picture(thisImage, date, "Stock Photo", name);
 				stockAlbum.addPicture(newPhoto);
 			}
+			
+			User stockUser = new User("stock");
 			stockUser.addAlbum(stockAlbum);
+			users = new ArrayList<User>();
+			users.add(stockUser);
+			
+			try {
+				FileOutputStream out = new FileOutputStream("data/dat");
+				ObjectOutputStream oout = new ObjectOutputStream(out);
+
+				oout.writeObject(users);
+
+				oout.close();
+				out.close();
+			} catch (Exception exception) {
+				exception.printStackTrace();
+			}
 		}
 		
 		enter.setOnAction(event->{
@@ -88,69 +94,85 @@ public class LoginController {
 		});
 		
 		exit.setOnAction(event->{
-			//TODO MAKE SURE THAT ALL INFORMATION IS SAVED BY UPDATING FILES!
+			//saveData();
 			primaryStage.close();
 			return;
 		});
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void loginToPage(Stage primaryStage) {
 		
-		String usernameTxt = username.getText();
-		
-		//if user is admin, redirect to admin
-		if(usernameTxt.toLowerCase().equals("admin")) {
-			this.primaryStage.close();
+		try {
+			FileInputStream fileInputStream = new FileInputStream("data/dat");
+			ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 			
-			FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(getClass().getResource("/view/Admin.fxml"));
-			try {
-	            AnchorPane root = (AnchorPane)loader.load();
-	            AdminController loginView = loader.getController();
-	            Stage stage = new Stage();
-	            
-	            loginView.start(stage);
-	            Scene scene = new Scene(root);
-	            stage.setScene(scene);
-	            stage.show();
-	
-			} catch(Exception e) {
-				e.printStackTrace();
-			}
-			return;
-		}
-		
-		String userPath = path + "/Users/"+usernameTxt;
-		File userInfo = new File(userPath);
-		
-		//if the user file path does not exist then it is an error
-		if (!userInfo.exists()) {
-			popUpMessage(primaryStage, "This User Does Not Exist");
-			return;
-		}
-		
-		//if the user does exist, redirect to specific user page
-		else {
-			this.primaryStage.close();
+			users = (ArrayList<User>) objectInputStream.readObject();
 			
-			FXMLLoader loader = new FXMLLoader();
-	        loader.setLocation(getClass().getResource("/view/UserName.fxml"));
-			try {
-	            AnchorPane root = (AnchorPane)loader.load();
-	            UserController userView = loader.getController();
-	            Stage stage = new Stage();
-	            
-	            userView.start(stage, usernameTxt);
-	            Scene scene = new Scene(root);
-	            stage.setScene(scene);
-	            stage.show();
-	
-			} catch(Exception e) {
-				e.printStackTrace();
+			objectInputStream.close();
+			fileInputStream.close();
+
+			User user = null;
+
+			for (User currentUser : users) {
+				if (currentUser.getUsername().equals(username.getText())) {
+					user = currentUser;
+				}
 			}
-			return;
-		}
 		
+			String usernameTxt = username.getText();
+			
+			//if user is admin, redirect to admin
+			if(usernameTxt.toLowerCase().equals("admin")) {
+				this.primaryStage.close();
+				
+				FXMLLoader loader = new FXMLLoader();
+		        loader.setLocation(getClass().getResource("/view/Admin.fxml"));
+				try {
+		            AnchorPane root = (AnchorPane)loader.load();
+		            AdminController loginView = loader.getController();
+		            Stage stage = new Stage();
+		            
+		            loginView.start(stage, users);
+		            Scene scene = new Scene(root);
+		            stage.setScene(scene);
+		            stage.show();
+		
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+				return;
+			}
+			
+			//if the user does not exist then it is an error
+			if (user==null) {
+				popUpMessage(primaryStage, "This User Does Not Exist");
+				return;
+			}
+			
+			//if the user does exist, redirect to specific user page
+			else {
+				this.primaryStage.close();
+				
+				FXMLLoader loader = new FXMLLoader();
+		        loader.setLocation(getClass().getResource("/view/UserName.fxml"));
+				try {
+		            AnchorPane root = (AnchorPane)loader.load();
+		            UserController userView = loader.getController();
+		            Stage stage = new Stage();
+		            
+		            userView.start(stage, user, users);
+		            Scene scene = new Scene(root);
+		            stage.setScene(scene);
+		            stage.show();
+		
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+				return;
+			}
+		}catch(Exception e) {}
+		return;
 	}
 	
 	//method for warning signature
