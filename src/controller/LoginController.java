@@ -71,13 +71,13 @@ public class LoginController {
 			stockUser.addAlbum(stockAlbum);
 			users = new ArrayList<User>();
 			users.add(stockUser);
-			
+		
 			try {
 				FileOutputStream out = new FileOutputStream("data/dat");
 				ObjectOutputStream oout = new ObjectOutputStream(out);
-
+	
 				oout.writeObject(users);
-
+	
 				oout.close();
 				out.close();
 			} catch (Exception exception) {
