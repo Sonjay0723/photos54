@@ -59,13 +59,21 @@ public class Picture implements Serializable {
 	}
 	
 	public void addTag(Tag newTag) {
+		for (int i = 0; i < tagList.size(); i++) {
+			if (newTag.getName().equals(tagList.get(i).getName()) && !tagList.get(i).getMulti())
+				return;
+			
+			if (newTag.equals(tagList.get(i)))
+				return;
+		}
+		
 		tagList.add(newTag);
 		Comparator<Tag> comparator = Comparator.comparing(Tag::toString);
 		tagList.sort(comparator);
 	}
 	
 	public void removeTag(String name, String value) {
-		Tag thisTag = new Tag(name,value);
+		Tag thisTag = new Tag(name,value,false);
 		int position = 0;
 		for(int i=0; i<tagList.size(); i++) {
 			if(thisTag.equals(tagList.get(i))) {
