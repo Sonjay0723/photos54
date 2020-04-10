@@ -9,7 +9,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="445.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminController">
    <children>
-      <TextField fx:id="usernameTxt" layoutX="401.0" layoutY="188.0" prefHeight="27.0" prefWidth="158.0" promptText="Username" style="-fx-background-color: #800000;" />
+      <TextField fx:id="usernameTxt" layoutX="401.0" layoutY="188.0" prefHeight="27.0" prefWidth="158.0" promptText="Username" style="-fx-background-color: #800000; -fx-text-fill: #FFFFFF;" />
       <Text fill="#da1111" layoutX="198.0" layoutY="72.0" strokeType="OUTSIDE" strokeWidth="20.0" text="Admin Page" textAlignment="CENTER" wrappingWidth="238.36067962646484">
          <font>
             <Font size="39.0" />
