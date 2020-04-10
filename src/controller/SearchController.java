@@ -2,7 +2,7 @@ package controller;
 
 import java.io.*;
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import javax.swing.ButtonGroup;
@@ -155,7 +155,7 @@ public class SearchController {
 	
 	
 	private void checkDate(Picture pic, LocalDate start, LocalDate end) {
-		LocalDate day = pic.getDate();
+		LocalDate day = LocalDateTime.ofInstant(pic.getDate().toInstant(), pic.getDate().getTimeZone().toZoneId()).toLocalDate();
 		
 		if ((start != null && !day.isBefore(start) && (end != null) && !day.isAfter(end)))
 			imageList.add(pic);

@@ -1,8 +1,8 @@
 package model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -13,12 +13,12 @@ public class Picture implements Serializable {
 	
 	private static final long serialVersionUID = 6955723612371190680L;
 	public SerializableImage picture;
-	public LocalDate date;
+	public Calendar date;
 	public String caption;
 	public String pictureName;
 	public ArrayList<Tag> tagList = new ArrayList<Tag>();
 	
-	public Picture(SerializableImage picture, LocalDate date, String caption, String pictureName) {
+	public Picture(SerializableImage picture, Calendar date, String caption, String pictureName) {
 		this.picture = picture;
 		this.date = date;
 		this.caption = caption;
@@ -29,11 +29,11 @@ public class Picture implements Serializable {
 		return picture;
 	}
 	
-	public LocalDate getDate() {
+	public Calendar getDate() {
 		return date;
 	}
 	
-	public void setDate(LocalDate x) {
+	public void setDate(Calendar x) {
 		this.date = x;
 	}
 	
