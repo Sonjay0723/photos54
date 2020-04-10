@@ -91,4 +91,12 @@ public class Picture implements Serializable {
 	public int compareTo(Picture currPicture) {
 		return this.getPictureName().toLowerCase().compareTo(currPicture.getPictureName().toLowerCase());
 	}
+	
+	public String toString() {
+		String res = "Name: " + this.pictureName + "\n";
+		res += "Caption: " + this.caption + "\n";
+		res += "Date: " + this.date.toString() + "\n";
+		
+		return res;
+	}
 }
