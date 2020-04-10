@@ -10,7 +10,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="445.0" prefWidth="634.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.UserController">
    <children>
       <TextField fx:id="albumTxt" layoutX="389.0" layoutY="153.0" prefHeight="27.0" prefWidth="158.0" promptText="Name of Album" style="-fx-background-color: #800000; -fx-text-fill: #FFFFFF;" />
-      <Text fx:id="userNameTxt" fill="#da1111" layoutX="162.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="20.0" textAlignment="CENTER" wrappingWidth="238.36067962646484">
+      <Text fx:id="userNameTxt" fill="#da1111" layoutX="29.0" layoutY="70.0" strokeType="OUTSIDE" strokeWidth="20.0" textAlignment="CENTER" wrappingWidth="369.36067962646484">
          <font>
             <Font size="39.0" />
          </font>
@@ -24,8 +24,8 @@
          </font>
       </Text>
       <Button fx:id="editBtn" layoutX="425.0" layoutY="267.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" style="-fx-background-color: #FF6347;" text="Rename" />
-      <Button fx:id="searchBtn" layoutX="427.0" layoutY="17.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" style="-fx-background-color: #FF6347;" text="Search" />
-      <Button fx:id="logoutBtn" layoutX="523.0" layoutY="17.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="86.0" style="-fx-background-color: #FF6347;" text="Logout" />
+      <Button fx:id="searchBtn" layoutX="427.0" layoutY="17.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="86.0" style="-fx-background-color: #FF6347;" text="Search" />
+      <Button fx:id="logoutBtn" layoutX="523.0" layoutY="17.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="86.0" style="-fx-background-color: #FF6347;" text="Logout" />
       <Button fx:id="redirectAlbumBtn" layoutX="364.0" layoutY="362.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="213.0" style="-fx-background-color: #FF6347;" text="Open Album" />
    </children>
 </AnchorPane>

@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 public class Picture implements Serializable {
 	
 	private static final long serialVersionUID = 6955723612371190680L;
+	
 	public SerializableImage picture;
 	public Calendar date;
 	public String caption;
@@ -63,7 +64,6 @@ public class Picture implements Serializable {
 		tagList.add(newTag);
 		Comparator<Tag> comparator = Comparator.comparing(Tag::toString);
 		tagList.sort(comparator);
-		//TODO add to file
 	}
 	
 	public void removeTag(String name, String value) {
@@ -76,10 +76,13 @@ public class Picture implements Serializable {
 			}
 		}
 		tagList.remove(position);
-		//TODO remove from file
 	}
 	
 	public boolean equals(Picture x) {
 		return this.pictureName.toLowerCase().equals(x.pictureName.toLowerCase());
+	}
+	
+	public int compareTo(Picture currPicture) {
+		return this.getPictureName().toLowerCase().compareTo(currPicture.getPictureName().toLowerCase());
 	}
 }

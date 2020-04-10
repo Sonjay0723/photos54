@@ -1,16 +1,19 @@
 package model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Tag implements Serializable {
 	
 	public static final long serialVersionUID = -2310738753538431907L;
 	public String name;
 	public String value;
+	public boolean multi;
 	
-	public Tag(String name, String value) {
+	public Tag(String name, String value, boolean multi) {
 		this.name = name; 
 		this.value = value;
+		this.multi = multi;
 	}
 	
 	public String getName() {
@@ -19,6 +22,10 @@ public class Tag implements Serializable {
 	
 	public String getValue() {
 		return value;
+	}
+	
+	public boolean getMulti() {
+		return multi;
 	}
 	
 	@Override

@@ -39,14 +39,12 @@ public class Album implements Serializable {
 	}
 	
 	public void addPicture(Picture newPicture) {
-		//TODO add to files
 		pictureList.add(newPicture);
 		Comparator<Picture> comparator = Comparator.comparing(Picture::getPictureName);
 		pictureList.sort(comparator);
 	}
 	
 	public void removePicture(String thisPicture) {
-		//TODO remove to files
 		int position = 0;
 		for(int i=0; i<pictureList.size(); i++) {
 			if(thisPicture.equals(pictureList.get(i).getPictureName())) {

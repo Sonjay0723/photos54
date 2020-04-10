@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ public class User implements Serializable{
 	private static final long serialVersionUID = 8177923271139908648L;
 	public String username;
 	public ArrayList<Album> albumList = new ArrayList<Album>();
+	public ArrayList<String> tagTypes = new ArrayList<String>();
 	
 	public User(String username) {
 		this.username = username;
@@ -37,6 +39,17 @@ public class User implements Serializable{
 		return this.albumList;
 	}
 	
+	public ArrayList<String> getTagTypes(){
+		return this.tagTypes;
+	}
+	
+	public void addTagType(String tagName) {
+		if(!tagTypes.contains(tagName.toLowerCase())) {
+			tagTypes.add(tagName.toLowerCase());
+			Collections.sort(tagTypes);
+		}
+	}
+	
 	public void addAlbum(Album newAlbum) {
 		albumList.add(newAlbum);
 		Comparator<Album> comparator = Comparator.comparing(Album::getTitle);
@@ -52,7 +65,6 @@ public class User implements Serializable{
 			}
 		}
 		albumList.remove(position);
-		//TODO remove from files
 	}
 	
 	public Album getAlbum(String title) {

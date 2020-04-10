@@ -3,7 +3,6 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,55 +10,57 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="654.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumController">
    <children>
-      <ListView layoutX="26.0" layoutY="67.0" prefHeight="311.0" prefWidth="224.0" />
-      <Label id="lblAlbumName" layoutX="26.0" layoutY="14.0" text="Album: (Album Name)" textFill="#ff5100">
+      <Label id="lblAlbumName" fx:id="albumTitle" layoutX="30.0" layoutY="14.0" prefHeight="53.0" prefWidth="359.0" textAlignment="CENTER" textFill="#da1111">
          <font>
             <Font size="36.0" />
          </font>
       </Label>
-      <ImageView id="imgPic" fitHeight="86.0" fitWidth="135.0" layoutX="280.0" layoutY="107.0" pickOnBounds="true" preserveRatio="true" />
-      <TextField layoutX="280.0" layoutY="339.0" prefHeight="39.0" prefWidth="135.0" />
-      <TextArea layoutX="280.0" layoutY="230.0" prefHeight="70.0" prefWidth="135.0" />
+      <ImageView id="imgPic" fx:id="selectedImage" fitHeight="105.0" fitWidth="135.0" layoutX="280.0" layoutY="94.0" pickOnBounds="true" preserveRatio="true" />
       <Label id="lblCaption" layoutX="280.0" layoutY="203.0" text="Caption:" />
       <Label id="lblDate" layoutX="280.0" layoutY="312.0" text="Date:" />
-      <Label id="lblIamge" layoutX="280.0" layoutY="67.0" text="Image:" />
-      <Button id="btnAdd" layoutX="26.0" layoutY="391.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" text="Add Photo">
+      <Label id="lblIamge" layoutX="280.0" layoutY="76.0" text="Image:" />
+      <Button id="btnAdd" fx:id="addPicture" layoutX="26.0" layoutY="391.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" style="-fx-background-color: #ff6347;" text="Add Photo">
          <font>
             <Font size="12.0" />
          </font>
       </Button>
-      <Button id="btnDelete" layoutX="150.0" layoutY="391.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" text="Delete Photo">
+      <Button id="btnDelete" fx:id="deletePicture" layoutX="157.0" layoutY="391.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" style="-fx-background-color: #ff6347;" text="Delete Photo">
          <font>
             <Font size="12.0" />
          </font>
       </Button>
-      <Button id="btnEdit" layoutX="280.0" layoutY="391.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="135.0" text="Edit Photo Caption">
+      <Button id="btnEdit" fx:id="editCaption" layoutX="280.0" layoutY="391.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="135.0" style="-fx-background-color: #ff6347;" text="Edit Photo Caption">
          <font>
             <Font size="12.0" />
          </font>
       </Button>
-      <ListView layoutX="440.0" layoutY="107.0" prefHeight="193.0" prefWidth="200.0" />
+      <ListView fx:id="listViewTag" layoutX="440.0" layoutY="92.0" prefHeight="208.0" prefWidth="200.0" style="-fx-background-color: #ff6347;" />
       <Label id="lblTag" layoutX="440.0" layoutY="67.0" text="Tags:" />
-      <Button layoutX="440.0" layoutY="320.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" text="Add Tag">
+      <Button fx:id="addTag" layoutX="440.0" layoutY="320.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Add Tag">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button layoutX="549.0" layoutY="320.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" text="Delete Tag">
+      <Button fx:id="deleteTag" layoutX="549.0" layoutY="320.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Delete Tag">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button layoutX="442.0" layoutY="372.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="91.0" text="Move to Album" textAlignment="CENTER" wrapText="true">
+      <Button fx:id="moveToAlbum" layoutX="442.0" layoutY="372.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Move to Album" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button layoutX="549.0" layoutY="372.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="91.0" text="Add to Album" textAlignment="CENTER" wrapText="true">
+      <Button fx:id="copyToAlbum" layoutX="549.0" layoutY="372.0" mnemonicParsing="false" prefHeight="58.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Add to Album" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button id="btnSlideshow" layoutX="531.0" layoutY="21.0" mnemonicParsing="false" text="Slideshow" />
+      <Button id="btnSlideshow" fx:id="toSlideShow" layoutX="486.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="70.0" style="-fx-background-color: #ff6347;" text="Slideshow" />
+      <ListView fx:id="listViewImg" layoutX="26.0" layoutY="80.0" prefHeight="299.0" prefWidth="228.0" style="-fx-background-color: #ff6347;" />
+      <Button id="btnSlideshow" fx:id="logout" layoutX="574.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="54.0" style="-fx-background-color: #ff6347;" text="Logout" />
+      <TextField fx:id="showCaption" layoutX="280.0" layoutY="229.0" prefHeight="78.0" prefWidth="135.0" style="-fx-text-fill: #FFFFFF; -fx-background-color: #800000;" />
+      <TextField fx:id="showDate" editable="false" layoutX="280.0" layoutY="336.0" prefHeight="39.0" prefWidth="135.0" style="-fx-text-fill: #FFFFFF; -fx-background-color: #800000;" />
+      <Button id="btnSlideshow" fx:id="toUserPage" layoutX="410.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" style="-fx-background-color: #ff6347;" text="Back" />
    </children>
 </AnchorPane>

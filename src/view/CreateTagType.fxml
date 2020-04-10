@@ -9,14 +9,15 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="196.0" prefWidth="291.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label layoutX="21.0" layoutY="14.0" text="Tag Type:" textFill="#ff5100">
+      <Label layoutX="21.0" layoutY="14.0" text="Tag Type:" textFill="#da1111">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <TextField layoutX="21.0" layoutY="57.0" />
-      <RadioButton layoutX="21.0" layoutY="108.0" mnemonicParsing="false" text="Multiple Values" />
-      <Button id="btnAdd" layoutX="21.0" layoutY="144.0" mnemonicParsing="false" text="Add" />
-      <RadioButton layoutX="135.0" layoutY="108.0" mnemonicParsing="false" text="Single Value" />
+      <TextField fx:id="newType" layoutX="21.0" layoutY="57.0" promptText="Enter Type" style="-fx-background-color: #800000; -fx-text-fill: #FFFFFF;" />
+      <RadioButton fx:id="multiVal" layoutX="21.0" layoutY="108.0" mnemonicParsing="false" text="Multiple Values" />
+      <Button id="btnAdd" fx:id="addBt" layoutX="21.0" layoutY="144.0" mnemonicParsing="false" style="-fx-background-color: #FF6347;" text="Add" />
+      <RadioButton fx:id="singlVal" layoutX="135.0" layoutY="108.0" mnemonicParsing="false" text="Single Value" />
+      <Button id="btnAdd" fx:id="cancelBtn" layoutX="77.0" layoutY="144.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="63.0" style="-fx-background-color: #FF6347;" text="Cancel" />
    </children>
 </AnchorPane>

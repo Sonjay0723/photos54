@@ -110,7 +110,7 @@ public class UserController {
 		            AlbumController albumView = loader.getController();
 		            Stage stage = new Stage();
 		            
-		            albumView.start(stage, currUser, userList);
+		            albumView.start(stage, currUser, userList, listView.getSelectionModel().getSelectedItem());
 		            Scene scene = new Scene(root);
 		            stage.setScene(scene);
 		            stage.show();
@@ -285,7 +285,7 @@ public class UserController {
 		//if the newSong does not exist in the albumlist, add it to the albumlist, otherwise add the original song back in
 		if(currTitle.compareTo(title)==0) {
 			add(currAlbum,primaryStage, albumList, thisUser);
-			popUpMessage(primaryStage,"The information for this song has not been edited!");
+			popUpMessage(primaryStage,"The information for this title has not been edited!");
 			return;
 		}
 		

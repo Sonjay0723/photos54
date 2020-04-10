@@ -94,7 +94,6 @@ public class LoginController {
 		});
 		
 		exit.setOnAction(event->{
-			//saveData();
 			primaryStage.close();
 			return;
 		});

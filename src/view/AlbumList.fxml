@@ -8,12 +8,13 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="241.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label id="lblAlbumlis" layoutX="32.0" layoutY="24.0" text="Albums:" textFill="#ff5100">
+      <Label id="lblAlbumlis" layoutX="32.0" layoutY="24.0" text="Albums:" textFill="#da1111">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <ListView layoutX="32.0" layoutY="65.0" prefHeight="272.0" prefWidth="178.0" />
-      <Button layoutX="32.0" layoutY="347.0" mnemonicParsing="false" text="Select" />
+      <ListView fx:id="albumList" layoutX="32.0" layoutY="65.0" prefHeight="272.0" prefWidth="178.0" style="-fx-background-color: #FF6347;" />
+      <Button fx:id="chooseAlbum" layoutX="32.0" layoutY="347.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="54.0" style="-fx-background-color: #FF6347;" text="Select" />
+      <Button fx:id="close" layoutX="101.0" layoutY="347.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="54.0" style="-fx-background-color: #FF6347;" text="Cancel" />
    </children>
 </AnchorPane>
