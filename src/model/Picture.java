@@ -93,10 +93,6 @@ public class Picture implements Serializable {
 	}
 	
 	public String toString() {
-		String res = "Name: " + this.pictureName + "\n";
-		res += "Caption: " + this.caption + "\n";
-		res += "Date: " + this.date.toString() + "\n";
-		
-		return res;
+		return this.pictureName;
 	}
 }

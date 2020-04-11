@@ -44,11 +44,13 @@ public class User implements Serializable{
 	}
 	
 	public void addTagType(TagType tagName) {
-		if(!tagTypes.contains(tagName)) {
-			tagTypes.add(tagName);
-			Comparator<TagType> comparator = Comparator.comparing(TagType::getTagName);
-			tagTypes.sort(comparator);
+		for(int i=0; i<tagTypes.size(); i++) {
+			if(tagTypes.get(i).getTagName().equals(tagName.getTagName()))
+				return;
 		}
+		tagTypes.add(tagName);
+		Comparator<TagType> comparator = Comparator.comparing(TagType::getTagName);
+		tagTypes.sort(comparator);
 	}
 	
 	public void addAlbum(Album newAlbum) {

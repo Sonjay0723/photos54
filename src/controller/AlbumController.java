@@ -52,7 +52,9 @@ public Stage primaryStage;
 	@FXML private Button deletePicture;
 	//Done
 	@FXML private Button editCaption;
+	//Done
 	@FXML private Button addTag;
+	//Done
 	@FXML private Button deleteTag;
 	@FXML private Button moveToAlbum;
 	@FXML private Button copyToAlbum;
@@ -95,7 +97,6 @@ public Stage primaryStage;
 		currUser.addTagType(new TagType("person", true));
 		currUser.addTagType(new TagType("event", false));
 		
-		//TODO EDIT DOES NOT WORK
 		addPicture.setOnAction(event->{
 			FileChooser fc = new FileChooser();
 			File tmp = fc.showOpenDialog(null);
@@ -127,6 +128,17 @@ public Stage primaryStage;
 			}
 		});
 		
+		deleteTag.setOnAction(event->{
+			if(pictureList.isEmpty() || tagList.isEmpty()) 
+				popUpMessage(primaryStage, "There is nothing selected to delete!");
+			else if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewTag.getSelectionModel().getSelectedItem().toString()+" from the list?")){
+				if (!tagList.isEmpty()){
+					deleteTag(listViewImg.getSelectionModel().getSelectedItem());
+					saveData(userList);
+				}
+			}
+		});
+		
 		editCaption.setOnAction(event->{
 			if(pictureList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to recaption!");
@@ -144,7 +156,22 @@ public Stage primaryStage;
 			if(pictureList.isEmpty())
 				popUpMessage(primaryStage, "There is no Image selected to add a tag for!");
 			else if(agreeOrDisagree(primaryStage, "Would you like to add tag(s) for "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+"?")) {
-				
+				this.primaryStage.close();
+				FXMLLoader loader = new FXMLLoader();
+		        loader.setLocation(getClass().getResource("/view/AddTag.fxml"));
+				try {
+		            AnchorPane root = (AnchorPane)loader.load();
+		            AddTagController tagView = loader.getController();
+		            Stage stage = new Stage();
+		            
+		            tagView.start(stage, currUser, userList, listViewImg.getSelectionModel().getSelectedItem(), currAlbum, listViewImg.getSelectionModel().getSelectedIndex());
+		            Scene scene = new Scene(root);
+		            stage.setScene(scene);
+		            stage.show();
+		
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		
@@ -294,6 +321,27 @@ public Stage primaryStage;
 		return;
 	}
 	
+	public void deleteTag(Picture thisPicture){
+		
+		//delete current Picture
+		int currIndex = listViewTag.getSelectionModel().getSelectedIndex();
+		thisPicture.removeTag(listViewTag.getSelectionModel().getSelectedItem().getName(), listViewTag.getSelectionModel().getSelectedItem().getValue());
+		tagList.remove(currIndex);
+		listViewTag.setItems(tagList);
+		
+		//select next User in List or clear text fields if list is empty
+		if(!tagList.isEmpty()) {
+			if(tagList.size() <= currIndex)
+				listViewTag.getSelectionModel().select(currIndex-1);
+			else
+				listViewTag.getSelectionModel().select(currIndex);
+		}
+		else
+			tagList.clear();
+		
+		return;
+	}
+	
 	public void editCap(ObservableList<Picture> pictureList) {
 		Picture currPic = pictureList.get((listViewImg.getSelectionModel().getSelectedIndex()));
 		
@@ -352,6 +400,8 @@ public Stage primaryStage;
 			listViewTag.setItems(tagList);
 			listViewTag.getSelectionModel().select(0);
 		}
+		else
+			listViewTag.setItems(tagList);
 	}
 	
 	//method to allow user to back out of decision

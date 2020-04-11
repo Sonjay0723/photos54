@@ -5,6 +5,9 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -16,6 +19,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.layout.AnchorPane;
@@ -40,12 +44,21 @@ public class AddTagController {
 	@FXML private RadioButton singleVal;
 	
 	ObservableList<TagType> tagTypeList;
+	final ToggleGroup howMany = new ToggleGroup();
 	
 	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Picture currPicture, Album currAlbum, int index) {
 		
 		this.primaryStage = primaryStage;
 		
 		tagTypeList = FXCollections.observableArrayList(currUser.getTagTypes());
+
+		BooleanBinding isTextFieldEmpty = Bindings.isEmpty(newTag.textProperty());
+		multiVal.setToggleGroup(howMany);
+		singleVal.setToggleGroup(howMany);
+		multiVal.setSelected(true);
+		createNewType.disableProperty().bind(isTextFieldEmpty);
+		multiVal.disableProperty().bind(isTextFieldEmpty);
+		singleVal.disableProperty().bind(isTextFieldEmpty);
 		
 		typeView
         .getSelectionModel()
@@ -55,6 +68,31 @@ public class AddTagController {
 			typeView.setItems(tagTypeList);
 			typeView.getSelectionModel().select(0);
 		}
+		
+		createNewType.setOnAction(event->{
+			
+			boolean isMulti = multiVal.isSelected();
+			TagType newTagName = new TagType(newTag.getText(), isMulti);
+			tagTypeList.add(newTagName);
+			typeView.setItems(tagTypeList);
+			
+			for(int i=0; i< tagTypeList.size(); i++) {
+				if(tagTypeList.get(i).getTagName().equals(newTagName.getTagName())) {
+					typeView.getSelectionModel().select(i);
+					break;
+				}
+			}
+			
+			currUser.addTagType(newTagName);
+			saveData(userList);
+			
+			newTag.clear();
+			
+		});
+		
+		/*newTag.setOnAction(event->{
+			multiVal.setSelected(true);
+		});*/
 		
 		addTag.setOnAction(event->{
 			
@@ -75,6 +113,7 @@ public class AddTagController {
 				Tag newTag = new Tag(currTag.getTagName(), newValue.getText(), currTag.getMulti());
 				if(agreeOrDisagree(primaryStage, "Would you like to add the tag "+newTag.toString()+" to "+currPicture.getPictureName()+"?")) {
 					currPicture.addTag(newTag);
+					newValue.clear();
 					saveData(userList);
 				}
 			}

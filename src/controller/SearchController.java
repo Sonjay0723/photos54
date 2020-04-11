@@ -86,8 +86,10 @@ public class SearchController {
 			else if (imageList.isEmpty())
 				popUpMessage(primaryStage, "Please select images");
 			else {
-				if (agreeOrDisagree(primaryStage, "Would you like to make the selected songs an album?"))
+				if (agreeOrDisagree(primaryStage, "Would you like to make the selected songs an album?")) {
 					createAlbum();
+					saveData(userList);
+				}
 			}
 		});
 		
@@ -240,5 +242,20 @@ public class SearchController {
 			return true;
 		}
 		return false;
+	}
+	
+	//method to save User data
+	private void saveData(ArrayList<User> userList) {
+		try {
+			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");
+			ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+			
+			objectOutputStream.writeObject(userList);
+			
+			objectOutputStream.close();
+			fileOutputStream.close();
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
 	}
 }
