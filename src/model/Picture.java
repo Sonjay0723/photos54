@@ -59,6 +59,14 @@ public class Picture implements Serializable {
 	}
 	
 	public void addTag(Tag newTag) {
+		for (int i = 0; i < tagList.size(); i++) {
+			if (newTag.getName().equals(tagList.get(i).getName()) && !tagList.get(i).getMulti())
+				return;
+			
+			if (newTag.equals(tagList.get(i)))
+				return;
+		}
+		
 		tagList.add(newTag);
 		Comparator<Tag> comparator = Comparator.comparing(Tag::toString);
 		tagList.sort(comparator);
@@ -82,5 +90,13 @@ public class Picture implements Serializable {
 	
 	public int compareTo(Picture currPicture) {
 		return this.getPictureName().toLowerCase().compareTo(currPicture.getPictureName().toLowerCase());
+	}
+	
+	public String toString() {
+		String res = "Name: " + this.pictureName + "\n";
+		res += "Caption: " + this.caption + "\n";
+		res += "Date: " + this.date.toString() + "\n";
+		
+		return res;
 	}
 }
