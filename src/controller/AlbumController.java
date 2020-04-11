@@ -10,6 +10,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -19,6 +22,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -27,7 +31,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import model.Album;
 import model.Picture;
 import model.SerializableImage;
@@ -38,41 +44,33 @@ import model.User;
 public class AlbumController {
 public Stage primaryStage;
 
-	//Done
 	@FXML private Label albumTitle;
 	
 	@FXML private Button toSlideShow;
-	//Done
 	@FXML private Button logout;
-	//Done
 	@FXML private Button toUserPage;
-	//Done
 	@FXML private Button addPicture;
-	//Done
 	@FXML private Button deletePicture;
-	//Done
 	@FXML private Button editCaption;
-	//Done
 	@FXML private Button addTag;
-	//Done
 	@FXML private Button deleteTag;
 	@FXML private Button moveToAlbum;
 	@FXML private Button copyToAlbum;
 	
-	//Done
 	@FXML private ListView<Picture> listViewImg;
-	//Done
 	@FXML private ListView<Tag> listViewTag;
 	
-	//Done
 	@FXML private ImageView selectedImage;
 	
-	//Done
 	@FXML private TextField showCaption;
-	//Done
 	@FXML private TextField showDate;
 	
+	@FXML private Button slideshowNext;
+	@FXML private Button slideshowPrevious;
+	@FXML private ImageView slideshowImage;
+	
 	ObservableList<Tag> tagList;
+	public int currSlideShowImage = 0;
 	
 	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Album currAlbum, int index) {
 		
@@ -88,17 +86,50 @@ public Stage primaryStage;
         .addListener((obs, oldVal, newVal) -> whatInfo(pictureList));
 		
 		if(!pictureList.isEmpty()) {
+			
+			//TODO listView of thumbnails
+			
+			/*listViewImg.setCellFactory(new Callback<ListView<Picture>, ListCell<Picture>>() {
+				@Override
+				public ListCell<Picture> call(ListView<Picture> photoList) {
+					return new PhotoCell();
+				}
+			});*/
+			
 			listViewImg.setItems(pictureList);
 			listViewImg.getSelectionModel().select(index);
 			whatInfo(pictureList);
+			
+			refreshSlideShow(pictureList);
 		}
 		
 		currUser.addTagType(new TagType("location", false));
 		currUser.addTagType(new TagType("person", true));
 		currUser.addTagType(new TagType("event", false));
 		
+		//set up when user is allowed to delete a picture/tag/move to an album/ add to an album
+		deletePicture.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
+		addTag.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
+		moveToAlbum.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
+		copyToAlbum.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
+		deleteTag.disableProperty().bind(listViewTag.getSelectionModel().selectedItemProperty().isNull());
+		slideshowNext.disableProperty().bind(Bindings.size(pictureList).isEqualTo(0).or(Bindings.size(pictureList).isEqualTo(1)));
+		slideshowPrevious.disableProperty().bind(Bindings.size(pictureList).isEqualTo(0).or(Bindings.size(pictureList).isEqualTo(1)));
+		if(!pictureList.isEmpty()) {
+			BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
+			editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
+		}
+		else
+			editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
+		
 		addPicture.setOnAction(event->{
 			FileChooser fc = new FileChooser();
+			fc.getExtensionFilters().addAll(
+					new ExtensionFilter("Image Files", "*.bmp", "*.BMP", "*.gif", "*.GIF", "*.jpg", "*.JPG", "*.png",
+							"*.PNG"),
+					new ExtensionFilter("Bitmap Files", "*.bmp", "*.BMP"),
+					new ExtensionFilter("GIF Files", "*.gif", "*.GIF"), new ExtensionFilter("JPEG Files", "*.jpg", "*.JPG"),
+					new ExtensionFilter("PNG Files", "*.png", "*.PNG"));
 			File tmp = fc.showOpenDialog(null);
 			
 			if(tmp!=null) {
@@ -111,51 +142,45 @@ public Stage primaryStage;
 				Picture newPic = new Picture(thisPic, date, "", name);
 				addPic(newPic, primaryStage, pictureList, currAlbum);
 				saveData(userList);
+				refreshSlideShow(pictureList);
 			}
-			else {
+			else
 				whatInfo(pictureList);
-			}
 		});
 		
 		deletePicture.setOnAction(event->{
-			if(pictureList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to delete!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+" from the list?")){
-				if (!pictureList.isEmpty()){
-					deletePic(pictureList, currAlbum);
-					saveData(userList);
+			if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+" from the list?")){
+				deletePic(pictureList, currAlbum);
+				saveData(userList);
+				refreshSlideShow(pictureList);
+				if(!pictureList.isEmpty()) {
+					BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
+					editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
 				}
 			}
 		});
 		
 		deleteTag.setOnAction(event->{
-			if(pictureList.isEmpty() || tagList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to delete!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewTag.getSelectionModel().getSelectedItem().toString()+" from the list?")){
-				if (!tagList.isEmpty()){
-					deleteTag(listViewImg.getSelectionModel().getSelectedItem());
-					saveData(userList);
-				}
+			if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewTag.getSelectionModel().getSelectedItem().toString()+" from the list?")){
+				deleteTag(listViewImg.getSelectionModel().getSelectedItem());
+				saveData(userList);
+				
 			}
 		});
 		
 		editCaption.setOnAction(event->{
-			if(pictureList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to recaption!");
-			else if(agreeOrDisagree(primaryStage, "Would you like recaption "+listViewImg.getSelectionModel().getSelectedItem().getPictureName())){
-				if (!pictureList.isEmpty()){
-					editCap(pictureList);
-					saveData(userList);
-				}
+			if(agreeOrDisagree(primaryStage, "Would you like recaption "+listViewImg.getSelectionModel().getSelectedItem().getPictureName())){
+				editCap(pictureList);
+				saveData(userList);
+				BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
+				editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
 			}
 			else
 				whatInfo(pictureList);
 		});
 		
 		addTag.setOnAction(event->{
-			if(pictureList.isEmpty())
-				popUpMessage(primaryStage, "There is no Image selected to add a tag for!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to add tag(s) for "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+"?")) {
+			if(agreeOrDisagree(primaryStage, "Would you like to add tag(s) for "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+"?")) {
 				this.primaryStage.close();
 				FXMLLoader loader = new FXMLLoader();
 		        loader.setLocation(getClass().getResource("/view/AddTag.fxml"));
@@ -173,6 +198,38 @@ public Stage primaryStage;
 					e.printStackTrace();
 				}
 			}
+		});
+		
+		slideshowNext.setOnAction(event->{
+			if(currSlideShowImage+1 >= pictureList.size()) 
+				currSlideShowImage = 0;
+			else
+				currSlideShowImage++;
+			
+			Picture currImage = pictureList.get(currSlideShowImage);
+			
+			Image toShow = currImage.getPicture().getImage();
+			slideshowImage.setImage(toShow);
+			
+			listViewImg.getSelectionModel().select(currSlideShowImage);
+			whatInfo(pictureList);
+			
+		});
+		
+		slideshowPrevious.setOnAction(event->{
+			if(currSlideShowImage-1 <0) 
+				currSlideShowImage = pictureList.size()-1;
+			else
+				currSlideShowImage--;
+			
+			Picture currImage = pictureList.get(currSlideShowImage);
+			
+			Image toShow = currImage.getPicture().getImage();
+			slideshowImage.setImage(toShow);
+			
+			listViewImg.getSelectionModel().select(currSlideShowImage);
+			whatInfo(pictureList);
+			
 		});
 		
 		toUserPage.setOnAction(event->{
@@ -278,7 +335,7 @@ public Stage primaryStage;
 			}
 			
 			pictureList.add(newPicture);
-			//select User
+			//select picture
 			listViewImg.setItems(pictureList);
 			listViewImg.getSelectionModel().select(pictureList.size()-1);
 			whatInfo(pictureList);
@@ -303,6 +360,7 @@ public Stage primaryStage;
 		if(!pictureList.isEmpty()) {
 			if(pictureList.size() <= currIndex) {
 				listViewImg.getSelectionModel().select(currIndex-1);
+				
 				whatInfo(pictureList);
 			}
 			else {
@@ -356,6 +414,20 @@ public Stage primaryStage;
 		currPic.setCaption(cap);
 	}
 	
+	public void refreshSlideShow(ObservableList<Picture> pictureList) {
+		if(!pictureList.isEmpty()) {
+			if(currSlideShowImage>=pictureList.size())
+				currSlideShowImage = pictureList.size()-1;
+			else if(currSlideShowImage<0)
+				currSlideShowImage = 0;
+			Picture currImage = pictureList.get(currSlideShowImage);
+			Image toShow = currImage.getPicture().getImage();
+			slideshowImage.setImage(toShow);
+		}
+		else
+			slideshowImage.setImage(null);
+	}
+	
 	public boolean inListPic(Picture search, Stage primaryStage, ObservableList<Picture> pictureList){
 		if(pictureList.isEmpty())
 			return false;
@@ -380,28 +452,33 @@ public Stage primaryStage;
 	//method to display Image values
 	public void whatInfo(ObservableList<Picture> photoList) {
 		
-		int currentIndex = listViewImg.getSelectionModel().getSelectedIndex();
-		Picture currImage = photoList.get(currentIndex);
-		
-		Image toShow = currImage.getPicture().getImage();
-		selectedImage.setImage(toShow);
-		
-		showCaption.setText(currImage.getCaption());
-		
-		String pattern = "MM/dd/yyyy HH:mm:ss";
-		DateFormat df = new SimpleDateFormat(pattern);
-		Date thisDate = currImage.getDate().getTime();
-		String displayDate = df.format(thisDate);
-		showDate.setText(displayDate);
-		
-		tagList = FXCollections.observableArrayList(currImage.getTagList());
-		
-		if(!tagList.isEmpty()) {
-			listViewTag.setItems(tagList);
-			listViewTag.getSelectionModel().select(0);
+		if(!photoList.isEmpty()) {
+			int currentIndex = listViewImg.getSelectionModel().getSelectedIndex();
+			Picture currImage = photoList.get(currentIndex);
+			
+			Image toShow = currImage.getPicture().getImage();
+			selectedImage.setImage(toShow);
+			
+			showCaption.setText(currImage.getCaption());
+			
+			String pattern = "MM/dd/yyyy HH:mm:ss";
+			DateFormat df = new SimpleDateFormat(pattern);
+			Date thisDate = currImage.getDate().getTime();
+			String displayDate = df.format(thisDate);
+			showDate.setText(displayDate);
+			
+			tagList = FXCollections.observableArrayList(currImage.getTagList());
+			
+			if(!tagList.isEmpty()) {
+				listViewTag.setItems(tagList);
+				listViewTag.getSelectionModel().select(0);
+			}
+			else
+				listViewTag.setItems(tagList);
+			
+			BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
+			editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
 		}
-		else
-			listViewTag.setItems(tagList);
 	}
 	
 	//method to allow user to back out of decision
