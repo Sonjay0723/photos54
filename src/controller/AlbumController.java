@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -56,8 +57,10 @@ public Stage primaryStage;
 	@FXML private Button addTag;
 	//Done
 	@FXML private Button deleteTag;
-	@FXML private Button moveToAlbum;
-	@FXML private Button copyToAlbum;
+	@FXML private Button btnMove;
+	@FXML private Button btnAdd;
+	
+	@FXML private ChoiceBox<String> albumChoice;
 	
 	//Done
 	@FXML private ListView<Picture> listViewImg;
@@ -96,6 +99,12 @@ public Stage primaryStage;
 		currUser.addTagType(new TagType("location", false));
 		currUser.addTagType(new TagType("person", true));
 		currUser.addTagType(new TagType("event", false));
+		
+		albumChoice.getItems().add("Choose an Album");
+		for (int i = 0; i < currUser.getAlbumList().size(); i++) {
+			if (!currAlbum.equals(currUser.getAlbumList().get(i)))
+				albumChoice.getItems().add(currUser.getAlbumList().get(i).getTitle());
+		}
 		
 		addPicture.setOnAction(event->{
 			FileChooser fc = new FileChooser();
@@ -194,6 +203,33 @@ public Stage primaryStage;
 			}
 		});
 		
+		btnMove.setOnAction(event->{
+			if(pictureList.isEmpty()) 
+				popUpMessage(primaryStage, "There is no picture to select!");
+			else if (agreeOrDisagree(primaryStage, "Would you like to move " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
+					+ " to " + albumChoice.getValue() + "?")) {
+				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
+				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
+				
+				deletePic(pictureList, currAlbum);
+				addPic(chosenPic, primaryStage, pictureList, chosenAlbum);
+				saveData(userList);
+			}
+		});
+		
+		btnAdd.setOnAction(event->{
+			if(pictureList.isEmpty()) 
+				popUpMessage(primaryStage, "There is no picture to select!");
+			else if (agreeOrDisagree(primaryStage, "Would you like to add " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
+					+ " to " + albumChoice.getValue() + "?")) {
+				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
+				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
+				
+				addPic(chosenPic, primaryStage, pictureList, chosenAlbum);
+				saveData(userList);
+			}
+		});
+
 		logout.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -213,7 +249,6 @@ public Stage primaryStage;
 				e.printStackTrace();
 			}
 		});
-		
 	}
 	
 	public void addPic(Picture newPicture, Stage primaryStage, ObservableList<Picture> pictureList, Album thisAlbum){

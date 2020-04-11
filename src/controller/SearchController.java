@@ -60,6 +60,11 @@ public class SearchController {
 		final ToggleGroup anotherTag = new ToggleGroup();
 		anotherTag.getToggles().addAll(choiceAnd, choiceOr);
 		
+		for (int i = 0; i < user.getTagTypes().size(); i++) {
+			choiceTag1.getItems().add(user.getTagTypes().get(i).getTagName());
+			choiceTag2.getItems().add(user.getTagTypes().get(i).getTagName());
+		}
+		
 		choiceTag2.setDisable(true);
 		txtTag2.setDisable(true);
 		
