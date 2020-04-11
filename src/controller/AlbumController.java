@@ -57,9 +57,12 @@ public Stage primaryStage;
 	@FXML private Button addTag;
 	//Done
 	@FXML private Button deleteTag;
+	//Done
 	@FXML private Button btnMove;
+	//Done
 	@FXML private Button btnAdd;
 	
+	//Done
 	@FXML private ChoiceBox<String> albumChoice;
 	
 	//Done
