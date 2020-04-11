@@ -5,7 +5,7 @@ import java.io.*;
 import java.util.*;
 
 import model.*;
-
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -50,10 +50,11 @@ public class AdminController {
 			listView.getSelectionModel().select(0);
 			whatInfo(usersList);
 		}
+		
+		addBtn.disableProperty().bind(Bindings.isEmpty(usernameTxt.textProperty()));
+		deleteBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
 
 		addBtn.setOnAction(event->{
-			if(usernameTxt.getText().isEmpty())
-				popUpMessage(primaryStage, "The Username field is Empty!");
 			if(agreeOrDisagree(primaryStage, "Would you like to add "+usernameTxt.getText()+" to the list?")) {
 				//Creating User object
 				User newUser = new model.User(usernameTxt.getText());
@@ -209,9 +210,11 @@ public class AdminController {
 	
 	//method to display values
 	public void whatInfo(ObservableList<User> usersList) {
-		int currentIndex = listView.getSelectionModel().getSelectedIndex();
-		User currUser = usersList.get(currentIndex);
-		usernameTxt.setText(currUser.getUsername());
+		if(!usersList.isEmpty()) {
+			int currentIndex = listView.getSelectionModel().getSelectedIndex();
+			User currUser = usersList.get(currentIndex);
+			usernameTxt.setText(currUser.getUsername());
+		}
 	}
 	
 	//method for warning signature
@@ -245,7 +248,7 @@ public class AdminController {
 	public Album addStockAlbum() {
 		//Create stock Album
 		Album stockAlbum = new Album("stock");
-		String stockAlbumPath = "src/model";
+		String stockAlbumPath = "data";
 		
 		File photos;
 		for (int currentPhoto = 1; currentPhoto <= 5; currentPhoto++) {

@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import javax.swing.ButtonGroup;
-
 import javafx.fxml.*;
 import model.*;
 import view.*;

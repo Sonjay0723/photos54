@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import model.*;
-
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,10 +22,6 @@ public class LoginController {
 	
 	@FXML private Button enter;
 	@FXML private TextField username;
-	@FXML private Button exit;
-	
-	//this is the path to the file where user info should be stored
-	private String path = "data";
 	
 	public Stage primaryStage;
 	
@@ -36,15 +32,9 @@ public class LoginController {
 		this.primaryStage = primaryStage;
 		
 		//create base directory if it does not exist
-		File baseDir = new File(path);
+		File baseFile = new File("data/dat");
 		
-		if(!baseDir.exists()) {
-			
-			baseDir.mkdir();
-			
-			path+="/dat";
-			
-			File baseFile = new File(path); 
+		if(!baseFile.exists()) {
 			
 			try {
 				baseFile.createNewFile();
@@ -53,7 +43,7 @@ public class LoginController {
 			}
 			
 			Album stockAlbum = new Album("stock");
-			String stockAlbumPath = "src/model";
+			String stockAlbumPath = "data";
 			
 			for (int currentPhoto = 1; currentPhoto <= 5; currentPhoto++) {
 				File photos = new File(stockAlbumPath + "/Img" + Integer.toString(currentPhoto) + ".jpg");
@@ -85,6 +75,8 @@ public class LoginController {
 			}
 		}
 		
+		enter.disableProperty().bind(Bindings.isEmpty(username.textProperty()));
+		
 		enter.setOnAction(event->{
 			if(username.getText().isEmpty())
 				popUpMessage(primaryStage, "The Username Text Field is empty!");
@@ -93,10 +85,6 @@ public class LoginController {
 			}
 		});
 		
-		exit.setOnAction(event->{
-			primaryStage.close();
-			return;
-		});
 	}
 	
 	@SuppressWarnings("unchecked")

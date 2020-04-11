@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -60,9 +62,17 @@ public class UserController {
 			whatInfo(albumList);
 		}
 		
+		addBtn.disableProperty().bind(Bindings.isEmpty(albumTxt.textProperty()));
+		deleteBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
+		redirectAlbumBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
+		if(!albumList.isEmpty()) {
+			BooleanBinding hasChanged = Bindings.equal(albumTxt.textProperty(), listView.getSelectionModel().getSelectedItem().getTitle());
+			editBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull().or(hasChanged).or(Bindings.isEmpty(albumTxt.textProperty())));
+		}
+		else
+			editBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull().or(Bindings.isEmpty(albumTxt.textProperty())));
+		
 		addBtn.setOnAction(event->{
-			if(albumTxt.getText().isEmpty())
-				popUpMessage(primaryStage, "The Album field is Empty!");
 			if(agreeOrDisagree(primaryStage, "Would you like to add the album  "+albumTxt.getText()+" to the list?")) {
 				//Creating Album object
 				Album newAlbum = new model.Album(albumTxt.getText());
@@ -74,33 +84,23 @@ public class UserController {
 		});
 		
 		deleteBtn.setOnAction(event->{
-			if(albumList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to delete!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to remove the album "+ listView.getSelectionModel().getSelectedItem().getTitle()+" from the list?")){
-				if (!albumList.isEmpty()){
-					delete(albumList, currUser);
-					saveData(userList);
-				}
+			if(agreeOrDisagree(primaryStage, "Would you like to remove the album "+ listView.getSelectionModel().getSelectedItem().getTitle()+" from the list?")){
+				delete(albumList, currUser);
+				saveData(userList);
 			}
 		});
 		
 		editBtn.setOnAction(event->{
-			if(albumList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to rename!");
-			else if(agreeOrDisagree(primaryStage, "Would you like rename the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
-				if (!albumList.isEmpty()){
-					edit(albumList,primaryStage, currUser);
-					saveData(userList);
-				}
+			if(agreeOrDisagree(primaryStage, "Would you like rename the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
+				edit(albumList,primaryStage, currUser);
+				saveData(userList);
 			}
 			else
 				whatInfo(albumList);
 		});
 		
 		redirectAlbumBtn.setOnAction(event->{
-			if(albumList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to open!");
-			else if(agreeOrDisagree(primaryStage, "Would you like open the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
+			if(agreeOrDisagree(primaryStage, "Would you like open the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
 				this.primaryStage.close();
 				
 				FXMLLoader loader = new FXMLLoader();
@@ -266,16 +266,8 @@ public class UserController {
 		
 		//find out which entries to edit
 		String title;
-		String currTitle;
 		title = albumTxt.getText();
 		Album currAlbum = albumList.get((listView.getSelectionModel().getSelectedIndex()));
-		currTitle = currAlbum.getTitle();
-		
-
-		//check if important fields are now empty
-		if(title.isBlank()) {
-			popUpMessage(primaryStage, "You cannot change the title of an Album to a Blank Title!");
-		}
 		
 		//create updated song and delete old one
 		Album newAlbum = new Album(title);
@@ -283,16 +275,11 @@ public class UserController {
 		delete(albumList, thisUser);
 		
 		//if the newSong does not exist in the albumlist, add it to the albumlist, otherwise add the original song back in
-		if(currTitle.compareTo(title)==0) {
-			add(currAlbum,primaryStage, albumList, thisUser);
-			popUpMessage(primaryStage,"The information for this title has not been edited!");
-			return;
-		}
-		
-		else if(!inList(newAlbum, primaryStage, albumList))
+		if(!inList(newAlbum, primaryStage, albumList))
 			add(newAlbum,primaryStage, albumList, thisUser);
 		else
 			add(currAlbum,primaryStage, albumList, thisUser);
+		
 		return;
 	}
 	
@@ -311,9 +298,13 @@ public class UserController {
 	
 	//method to display values
 	public void whatInfo(ObservableList<Album> albumList) {
-		int currentIndex = listView.getSelectionModel().getSelectedIndex();
-		Album currAlbum = albumList.get(currentIndex);
-		albumTxt.setText(currAlbum.getTitle());
+		if(!albumList.isEmpty()) {
+			int currentIndex = listView.getSelectionModel().getSelectedIndex();
+			Album currAlbum = albumList.get(currentIndex);
+			albumTxt.setText(currAlbum.getTitle());
+			BooleanBinding hasChanged = Bindings.equal(albumTxt.textProperty(), listView.getSelectionModel().getSelectedItem().getTitle());
+			editBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull().or(hasChanged).or(Bindings.isEmpty(albumTxt.textProperty())));
+		}
 	}
 	
 	//method for warning signature

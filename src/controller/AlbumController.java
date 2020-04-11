@@ -313,7 +313,7 @@ public Stage primaryStage;
 			}
 			
 			pictureList.add(newPicture);
-			//select User
+			//select picture
 			listViewImg.setItems(pictureList);
 			listViewImg.getSelectionModel().select(pictureList.size()-1);
 			whatInfo(pictureList);

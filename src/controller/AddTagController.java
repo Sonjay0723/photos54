@@ -52,13 +52,18 @@ public class AddTagController {
 		
 		tagTypeList = FXCollections.observableArrayList(currUser.getTagTypes());
 
-		BooleanBinding isTextFieldEmpty = Bindings.isEmpty(newTag.textProperty());
+		//set up multi/single radio buttons + when user is allowed to add new tag
+		BooleanBinding isTagFieldEmpty = Bindings.isEmpty(newTag.textProperty());
 		multiVal.setToggleGroup(howMany);
 		singleVal.setToggleGroup(howMany);
 		multiVal.setSelected(true);
-		createNewType.disableProperty().bind(isTextFieldEmpty);
-		multiVal.disableProperty().bind(isTextFieldEmpty);
-		singleVal.disableProperty().bind(isTextFieldEmpty);
+		createNewType.disableProperty().bind(isTagFieldEmpty);
+		multiVal.disableProperty().bind(isTagFieldEmpty);
+		singleVal.disableProperty().bind(isTagFieldEmpty);
+		
+		//set up when user is allowed to add new value
+		BooleanBinding isValueFieldEmpty = Bindings.isEmpty(newValue.textProperty());
+		addTag.disableProperty().bind(isValueFieldEmpty.or(typeView.getSelectionModel().selectedItemProperty().isNull()));
 		
 		typeView
         .getSelectionModel()
@@ -90,10 +95,6 @@ public class AddTagController {
 			
 		});
 		
-		/*newTag.setOnAction(event->{
-			multiVal.setSelected(true);
-		});*/
-		
 		addTag.setOnAction(event->{
 			
 			boolean canAdd = true;
@@ -103,20 +104,17 @@ public class AddTagController {
 					canAdd = false;
 			}
 			
-			if(tagTypeList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to add a value for!");
-			else if(!canAdd)
+			if(!canAdd)
 				popUpMessage(primaryStage, currTag.getTagName()+" is only allowed to have one value, and "+currPicture.getPictureName()+" already has one");
-			else if(newValue.getText().isBlank())
-				popUpMessage(primaryStage, "There is no tag value entered!");
 			else {
 				Tag newTag = new Tag(currTag.getTagName(), newValue.getText(), currTag.getMulti());
 				if(agreeOrDisagree(primaryStage, "Would you like to add the tag "+newTag.toString()+" to "+currPicture.getPictureName()+"?")) {
 					currPicture.addTag(newTag);
-					newValue.clear();
 					saveData(userList);
 				}
 			}
+			
+			newValue.clear();
 		});
 		
 		cancelBtn.setOnAction(event->{
