@@ -21,7 +21,7 @@ public class User implements Serializable{
 	private static final long serialVersionUID = 8177923271139908648L;
 	public String username;
 	public ArrayList<Album> albumList = new ArrayList<Album>();
-	public ArrayList<String> tagTypes = new ArrayList<String>();
+	public ArrayList<TagType> tagTypes = new ArrayList<TagType>();
 	
 	public User(String username) {
 		this.username = username;
@@ -39,14 +39,15 @@ public class User implements Serializable{
 		return this.albumList;
 	}
 	
-	public ArrayList<String> getTagTypes(){
+	public ArrayList<TagType> getTagTypes(){
 		return this.tagTypes;
 	}
 	
-	public void addTagType(String tagName) {
-		if(!tagTypes.contains(tagName.toLowerCase())) {
-			tagTypes.add(tagName.toLowerCase());
-			Collections.sort(tagTypes);
+	public void addTagType(TagType tagName) {
+		if(!tagTypes.contains(tagName)) {
+			tagTypes.add(tagName);
+			Comparator<TagType> comparator = Comparator.comparing(TagType::getTagName);
+			tagTypes.sort(comparator);
 		}
 	}
 	

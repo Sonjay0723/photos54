@@ -88,7 +88,7 @@ public class LoginController {
 		enter.setOnAction(event->{
 			if(username.getText().isEmpty())
 				popUpMessage(primaryStage, "The Username Text Field is empty!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to go to this user's page?")) {
+			else if(agreeOrDisagree(primaryStage, "Would you like to go to "+username.getText()+"'s page?")) {
 				loginToPage(primaryStage);
 			}
 		});

@@ -1,6 +1,5 @@
 package controller;
 
-import java.awt.TextField;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
@@ -19,26 +18,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import model.Album;
 import model.Picture;
 import model.SerializableImage;
 import model.Tag;
+import model.TagType;
 import model.User;
 
 public class AlbumController {
 public Stage primaryStage;
 
 	//Done
-	@FXML private Text albumTitle;
+	@FXML private Label albumTitle;
 	
 	@FXML private Button toSlideShow;
 	//Done
@@ -71,7 +72,7 @@ public Stage primaryStage;
 	
 	ObservableList<Tag> tagList;
 	
-	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Album currAlbum) {
+	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Album currAlbum, int index) {
 		
 		this.primaryStage = primaryStage;
 		
@@ -86,20 +87,21 @@ public Stage primaryStage;
 		
 		if(!pictureList.isEmpty()) {
 			listViewImg.setItems(pictureList);
-			listViewImg.getSelectionModel().select(0);
+			listViewImg.getSelectionModel().select(index);
 			whatInfo(pictureList);
 		}
 		
-		currUser.addTagType("Location");
-		currUser.addTagType("Person");
-		currUser.addTagType("Event");
+		currUser.addTagType(new TagType("location", false));
+		currUser.addTagType(new TagType("person", true));
+		currUser.addTagType(new TagType("event", false));
 		
+		//TODO EDIT DOES NOT WORK
 		addPicture.setOnAction(event->{
 			FileChooser fc = new FileChooser();
 			File tmp = fc.showOpenDialog(null);
 			
 			if(tmp!=null) {
-				Image img = new Image(tmp.getAbsolutePath());
+				Image img = new Image(tmp.toURI().toString());
 				SerializableImage thisPic = new SerializableImage(img);
 				String name = tmp.getName();
 				Calendar date = Calendar.getInstance();
@@ -117,7 +119,7 @@ public Stage primaryStage;
 		deletePicture.setOnAction(event->{
 			if(pictureList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to remove this picture from the list?")){
+			else if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+" from the list?")){
 				if (!pictureList.isEmpty()){
 					deletePic(pictureList, currAlbum);
 					saveData(userList);
@@ -128,7 +130,7 @@ public Stage primaryStage;
 		editCaption.setOnAction(event->{
 			if(pictureList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to recaption!");
-			else if(agreeOrDisagree(primaryStage, "Would you like recaption this Image?")){
+			else if(agreeOrDisagree(primaryStage, "Would you like recaption "+listViewImg.getSelectionModel().getSelectedItem().getPictureName())){
 				if (!pictureList.isEmpty()){
 					editCap(pictureList);
 					saveData(userList);
@@ -136,6 +138,14 @@ public Stage primaryStage;
 			}
 			else
 				whatInfo(pictureList);
+		});
+		
+		addTag.setOnAction(event->{
+			if(pictureList.isEmpty())
+				popUpMessage(primaryStage, "There is no Image selected to add a tag for!");
+			else if(agreeOrDisagree(primaryStage, "Would you like to add tag(s) for "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+"?")) {
+				
+			}
 		});
 		
 		toUserPage.setOnAction(event->{
@@ -275,8 +285,8 @@ public Stage primaryStage;
 		}
 		else {
 			//Clear all info
-			showCaption.setText(null);
-			showDate.setText(null);
+			showCaption.clear();
+			showDate.clear();
 			selectedImage.setImage(null);
 			tagList.clear();
 		}
@@ -291,7 +301,7 @@ public Stage primaryStage;
 		String currCap = currPic.getCaption();
 		
 		if(cap.equals(currCap)) {
-			popUpMessage(primaryStage,"The information for this caption has not been edited!");
+			popUpMessage(primaryStage,"The information for "+currPic.getPictureName()+"'s caption has not been edited!");
 			return;
 		}
 		

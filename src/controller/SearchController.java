@@ -52,7 +52,7 @@ public class SearchController {
 	
 	public Stage primaryStage;
 	
-	public void start(Stage primaryStage) {
+	public void start(Stage primaryStage, User currUser, ArrayList<User> userList) {
 		
 		this.primaryStage = primaryStage;
 		
@@ -69,7 +69,7 @@ public class SearchController {
 				else if ((dateStart.getValue()==null && dateEnd.getValue()==null) && txtTag1.getText()=="")
 					popUpMessage(primaryStage, "Please select a date range or a tag");
 				else {
-					search();
+					search(currUser);
 					imageView.setItems(imageList);
 				}
 			}
@@ -88,11 +88,9 @@ public class SearchController {
 		}
 	}
 	
-	private void search() {
-		imageList.removeAll();
+	private void search(User currUser) {
 		
-		User currUser = new User("temp");
-		//REPLACE WITH CODE TO GET PROPER USER!!!!!!!!!!!!!!!!!!!!
+		imageList.removeAll();
 		
 		List<Album> userAlbums = currUser.getAlbumList();
 		int albums = userAlbums.size();
@@ -104,8 +102,9 @@ public class SearchController {
 				Picture curr = pics.get(j);
 				LocalDate start = dateStart.getValue();
 				LocalDate end = dateEnd.getValue();
-				Tag tag1 = new Tag(choiceTag1.getValue(), txtTag1.getText());
-				Tag tag2 = txtTag2.getText().length() == 0 ? null : new Tag(choiceTag2.getValue(), txtTag2.getText());
+				//TODO edit false/true if necessary(May nor be required)s
+				Tag tag1 = new Tag(choiceTag1.getValue(), txtTag1.getText(), false);
+				Tag tag2 = txtTag2.getText().length() == 0 ? null : new Tag(choiceTag2.getValue(), txtTag2.getText(), false);
 				
 				//checks if a pic is within the date range if provided, no tags
 				if (tag1.getValue().length() == 0) {

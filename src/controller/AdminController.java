@@ -54,7 +54,7 @@ public class AdminController {
 		addBtn.setOnAction(event->{
 			if(usernameTxt.getText().isEmpty())
 				popUpMessage(primaryStage, "The Username field is Empty!");
-			if(agreeOrDisagree(primaryStage, "Would you like to add this user to the list?")) {
+			if(agreeOrDisagree(primaryStage, "Would you like to add "+usernameTxt.getText()+" to the list?")) {
 				//Creating User object
 				User newUser = new model.User(usernameTxt.getText());
 				add(newUser, primaryStage, usersList);
@@ -67,7 +67,7 @@ public class AdminController {
 		deleteBtn.setOnAction(event->{
 			if(usersList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to remove this user from the list?")){
+			else if(agreeOrDisagree(primaryStage, "Would you like to remove "+listView.getSelectionModel().getSelectedItem().getUsername()+" from the list?")){
 				if (!usersList.isEmpty()){
 					User currUser = usersList.get((listView.getSelectionModel().getSelectedIndex()));
 					delete(currUser, usersList);

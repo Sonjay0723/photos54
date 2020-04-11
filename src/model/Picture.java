@@ -65,7 +65,7 @@ public class Picture implements Serializable {
 	}
 	
 	public void removeTag(String name, String value) {
-		Tag thisTag = new Tag(name,value);
+		Tag thisTag = new Tag(name,value,false);
 		int position = 0;
 		for(int i=0; i<tagList.size(); i++) {
 			if(thisTag.equals(tagList.get(i))) {

@@ -62,9 +62,9 @@ public class UserController {
 		
 		addBtn.setOnAction(event->{
 			if(albumTxt.getText().isEmpty())
-				popUpMessage(primaryStage, "The Username field is Empty!");
-			if(agreeOrDisagree(primaryStage, "Would you like to add this album to the list?")) {
-				//Creating User object
+				popUpMessage(primaryStage, "The Album field is Empty!");
+			if(agreeOrDisagree(primaryStage, "Would you like to add the album  "+albumTxt.getText()+" to the list?")) {
+				//Creating Album object
 				Album newAlbum = new model.Album(albumTxt.getText());
 				add(newAlbum, primaryStage, albumList, currUser);
 				saveData(userList);
@@ -76,7 +76,7 @@ public class UserController {
 		deleteBtn.setOnAction(event->{
 			if(albumList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
-			else if(agreeOrDisagree(primaryStage, "Would you like to remove this album from the list?")){
+			else if(agreeOrDisagree(primaryStage, "Would you like to remove the album "+ listView.getSelectionModel().getSelectedItem().getTitle()+" from the list?")){
 				if (!albumList.isEmpty()){
 					delete(albumList, currUser);
 					saveData(userList);
@@ -87,7 +87,7 @@ public class UserController {
 		editBtn.setOnAction(event->{
 			if(albumList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to rename!");
-			else if(agreeOrDisagree(primaryStage, "Would you like rename this album?")){
+			else if(agreeOrDisagree(primaryStage, "Would you like rename the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
 				if (!albumList.isEmpty()){
 					edit(albumList,primaryStage, currUser);
 					saveData(userList);
@@ -99,8 +99,8 @@ public class UserController {
 		
 		redirectAlbumBtn.setOnAction(event->{
 			if(albumList.isEmpty()) 
-				popUpMessage(primaryStage, "There is nothing selected to Open!");
-			else if(agreeOrDisagree(primaryStage, "Would you like open this album?")){
+				popUpMessage(primaryStage, "There is nothing selected to open!");
+			else if(agreeOrDisagree(primaryStage, "Would you like open the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
 				this.primaryStage.close();
 				
 				FXMLLoader loader = new FXMLLoader();
@@ -110,7 +110,7 @@ public class UserController {
 		            AlbumController albumView = loader.getController();
 		            Stage stage = new Stage();
 		            
-		            albumView.start(stage, currUser, userList, listView.getSelectionModel().getSelectedItem());
+		            albumView.start(stage, currUser, userList, listView.getSelectionModel().getSelectedItem(), 0);
 		            Scene scene = new Scene(root);
 		            stage.setScene(scene);
 		            stage.show();
