@@ -168,7 +168,7 @@ public class LoginController {
 		            UserController userView = loader.getController();
 		            Stage stage = new Stage();
 		            
-		            userView.start(stage, user, users);
+		            userView.start(stage, user, users, 0);
 		            Scene scene = new Scene(root);
 		            stage.setScene(scene);
 		            stage.show();

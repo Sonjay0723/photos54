@@ -72,9 +72,13 @@ public class Album implements Serializable {
 	/**
 	 * Add a picture to the album's picture list
 	 * 
-	 * @param newPicture picture to add to the album's picture list
+	 * @param newPicture picture to add to the album's picture list(As long as it is not already there)
 	 */
 	public void addPicture(Picture newPicture) {
+		for(int i=0; i<this.getPictureList().size(); i++) {
+			if(this.getPicture(this.pictureList.get(i)).equals(newPicture.getPicture()))
+				return;
+		}
 		pictureList.add(newPicture);
 		Comparator<Picture> comparator = Comparator.comparing(Picture::getPictureName);
 		pictureList.sort(comparator);

@@ -78,6 +78,7 @@ public class SearchController {
 			txtTag2.setDisable(false);
 		});
 		
+		//search for pictures given date range and/or tag-value pair(s)
 		btnSearch.setOnAction(event->{
 			if ((choiceAnd.isSelected() || choiceOr.isSelected()) && (txtTag2.getText().length()==0)) {
 				popUpMessage(primaryStage, "Please add a second tag");

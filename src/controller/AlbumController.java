@@ -82,6 +82,8 @@ public class AlbumController {
 	ObservableList<Tag> tagList;
 	public int currSlideShowImage = 0;
 	
+	Album theCurrentAlbum;
+	
 	/**
 	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
 	 * The list of pictures for the current album is initialized
@@ -91,12 +93,14 @@ public class AlbumController {
 	 * @param userList The list of all user
 	 * @param currAlbum The current Album for the Current User
 	 * @param index Index of the Album's picture to be selected
+	 * @param albumIndex is the index of the current album for the user page
 	 */
-	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Album currAlbum, int index) {
+	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Album currAlbum, int index, int albumIndex) {
 		
 		this.primaryStage = primaryStage;
 		
 		albumTitle.setText(currAlbum.getTitle());
+		theCurrentAlbum = currAlbum;
 		
 		ObservableList<Picture> pictureList = FXCollections.observableArrayList(currAlbum.getPictureList());
 		
@@ -188,7 +192,7 @@ public class AlbumController {
 				date.setTimeInMillis(tmp.lastModified());
 				
 				Picture newPic = new Picture(thisPic, date, "", name);
-				addPic(newPic, primaryStage, pictureList, currAlbum, true);
+				addPic(newPic, primaryStage, pictureList, currAlbum, 0, pictureList);
 				saveData(userList);
 				refreshSlideShow(pictureList);
 			}
@@ -245,7 +249,7 @@ public class AlbumController {
 		            AddTagController tagView = loader.getController();
 		            Stage stage = new Stage();
 		            
-		            tagView.start(stage, currUser, userList, listViewImg.getSelectionModel().getSelectedItem(), currAlbum, listViewImg.getSelectionModel().getSelectedIndex());
+		            tagView.start(stage, currUser, userList, listViewImg.getSelectionModel().getSelectedItem(), currAlbum, listViewImg.getSelectionModel().getSelectedIndex(), albumIndex);
 		            Scene scene = new Scene(root);
 		            stage.setScene(scene);
 		            stage.show();
@@ -300,7 +304,7 @@ public class AlbumController {
 		        UserController userView = loader.getController();
 		        Stage stage = new Stage();
 		        
-		        userView.start(stage, currUser, userList);
+		        userView.start(stage, currUser, userList, albumIndex);
 		        Scene scene = new Scene(root);
 		        stage.setScene(scene);
 		        stage.show();
@@ -320,10 +324,9 @@ public class AlbumController {
 				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
 				
 				deletePic(pictureList, currAlbum);
-				addPic(chosenPic, primaryStage, FXCollections.observableArrayList(chosenAlbum.getPictureList()), chosenAlbum, false);
+				addPic(chosenPic, primaryStage, FXCollections.observableArrayList(chosenAlbum.getPictureList()), chosenAlbum, 1, pictureList);
 				saveData(userList);
 				refreshSlideShow(pictureList);
-				albumChoice.setValue(null);
 			}
 		});
 		
@@ -334,7 +337,7 @@ public class AlbumController {
 				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
 				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
 				
-				addPic(chosenPic, primaryStage, FXCollections.observableArrayList(chosenAlbum.getPictureList()), chosenAlbum, false);
+				addPic(chosenPic, primaryStage, FXCollections.observableArrayList(chosenAlbum.getPictureList()), chosenAlbum, 2, pictureList);
 				saveData(userList);
 			}
 		});
@@ -369,15 +372,16 @@ public class AlbumController {
 	 * @param primaryStage the current stage
 	 * @param pictureList The picture list to add a picture to
 	 * @param thisAlbum the current album
-	 * @param forThisAlbum tells if the move to album/copy to album is being done
+	 * @param forThisAlbum tells if the move to album/copy to album is being done, 0 for not, 1 for move, 2 for copy
+	 * @param currentPictureList is the pictureList for this album in case it needs to be added back in if it already exists in a list it was trying to be moved to
 	 */
-	public void addPic(Picture newPicture, Stage primaryStage, ObservableList<Picture> pictureList, Album thisAlbum, boolean forThisAlbum){
+	public void addPic(Picture newPicture, Stage primaryStage, ObservableList<Picture> pictureList, Album thisAlbum, int forThisAlbum, ObservableList<Picture> currentPictureList){
 		
 		if(pictureList.isEmpty()) {
 			
 			pictureList.add(newPicture);
 		
-			if(forThisAlbum) {
+			if(forThisAlbum == 0) {
 				listViewImg.setItems(pictureList);
 				listViewImg.getSelectionModel().select(0);
 				whatInfo(pictureList);
@@ -389,14 +393,14 @@ public class AlbumController {
 		}
 		
 		//adding in appropriate location
-		else if (!inListPic(newPicture, primaryStage, pictureList)) {
+		else if (!inListPic(newPicture, primaryStage, pictureList, forThisAlbum, currentPictureList)) {
 			for(int i=0; i<pictureList.size(); i++) {
 				if(pictureList.get(i).compareTo(newPicture) > 0) {
 					if(i==0) {
 						
 						pictureList.add(0,newPicture);
 						
-						if(forThisAlbum) {
+						if(forThisAlbum == 0) {
 							listViewImg.setItems(pictureList);
 							listViewImg.setCellFactory(param -> new ListCell<Picture>() {
 								ImageView imagePic = new ImageView();
@@ -427,7 +431,7 @@ public class AlbumController {
 						
 						pictureList.add(newPicture);
 
-						if(forThisAlbum) {
+						if(forThisAlbum == 0) {
 							listViewImg.setItems(pictureList);
 							listViewImg.setCellFactory(param -> new ListCell<Picture>() {
 								ImageView imagePic = new ImageView();
@@ -458,7 +462,7 @@ public class AlbumController {
 						
 						pictureList.add(i, newPicture);
 						
-						if(forThisAlbum) {
+						if(forThisAlbum == 0) {
 							listViewImg.setItems(pictureList);
 							listViewImg.setCellFactory(param -> new ListCell<Picture>() {
 								ImageView imagePic = new ImageView();
@@ -493,7 +497,7 @@ public class AlbumController {
 			
 			pictureList.add(newPicture);
 			
-			if(forThisAlbum) {
+			if(forThisAlbum == 0) {
 				listViewImg.setItems(pictureList);
 				listViewImg.setCellFactory(param -> new ListCell<Picture>() {
 					ImageView imagePic = new ImageView();
@@ -625,15 +629,23 @@ public class AlbumController {
 	 * @param search Picture to search for
 	 * @param primaryStage current stage
 	 * @param pictureList the picture list to search in to see if the picture already exists
+	 * @param forThisAlbum tells if the picture is being moved or copied or neither, 0 if for the current album, 1 if moving, 2 if copying
+	 * @param currentPictureList is the pictureList for this album in case it needs to be added back in if it already exists in a list it was trying to be moved to
 	 * 
 	 * @return True if it exists in the list, false otherwise
 	 */
-	public boolean inListPic(Picture search, Stage primaryStage, ObservableList<Picture> pictureList){
+	public boolean inListPic(Picture search, Stage primaryStage, ObservableList<Picture> pictureList, int forThisAlbum, ObservableList<Picture> currentPictureList){
 		if(pictureList.isEmpty())
 			return false;
 		for(int i=0; i<pictureList.size(); i++) {
 			if(pictureList.get(i).getPicture().equals(search.getPicture())) {
-				popUpMessage(primaryStage, "This Entry Already Exists in the List!");
+				if(forThisAlbum == 0)
+					popUpMessage(primaryStage, "This Picture Already Exists in the Album!");
+				else {
+					popUpMessage(primaryStage, "This Picture Already Exists in the Album you are attempting to move it to!");
+					if(forThisAlbum == 1)
+						addPic(search, primaryStage, currentPictureList, theCurrentAlbum, 0, currentPictureList);
+				}
 				return true;
 			}
 		}

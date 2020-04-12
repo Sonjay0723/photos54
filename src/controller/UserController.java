@@ -52,8 +52,9 @@ public class UserController {
 	 * @param primaryStage current stage
 	 * @param currUser the current user
 	 * @param userList the list of all users
+	 * @param index is the index of the current album for the user page
 	 */
-	public void start(Stage primaryStage, User currUser, ArrayList<User> userList) {
+	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, int index) {
 		
 		this.primaryStage = primaryStage;
 		
@@ -68,7 +69,7 @@ public class UserController {
 		
 		if(!albumList.isEmpty()) {
 			listView.setItems(albumList);
-			listView.getSelectionModel().select(0);
+			listView.getSelectionModel().select(index);
 			whatInfo(albumList);
 		}
 		
@@ -127,7 +128,7 @@ public class UserController {
 		            AlbumController albumView = loader.getController();
 		            Stage stage = new Stage();
 		            
-		            albumView.start(stage, currUser, userList, listView.getSelectionModel().getSelectedItem(), 0);
+		            albumView.start(stage, currUser, userList, listView.getSelectionModel().getSelectedItem(), 0, listView.getSelectionModel().getSelectedIndex());
 		            Scene scene = new Scene(root);
 		            stage.setScene(scene);
 		            stage.show();
