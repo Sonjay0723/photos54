@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -95,6 +96,21 @@ public Stage primaryStage;
 		
 		if(!pictureList.isEmpty()) {
 			listViewImg.setItems(pictureList);
+			listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+				ImageView imagePic = new ImageView();
+				@Override
+				public void updateItem(Picture pic, boolean empty) {
+	                super.updateItem(pic, empty);
+	                if (empty) {
+	                    setText(null);
+	                    setGraphic(null);
+	                } else {
+	                	imagePic.setImage(pic.getPicture().getImage());
+	                    setText(pic.getCaption());
+	                    setGraphic(imagePic);
+	                }
+				}
+			});
 			listViewImg.getSelectionModel().select(index);
 			whatInfo(pictureList);
 		}

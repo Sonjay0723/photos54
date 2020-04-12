@@ -19,6 +19,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -75,11 +76,27 @@ public class SearchController {
 			}
 			else {
 				search();
+				/*ObservableList<String> numList = FXCollections.observableArrayList();
+				for (int i = 0; i < imageList.size(); i++) {
+					numList.add(i + "");
+				}*/
 				imageView.setItems(imageList);
-				/*
-				imageView.setCellFactory(param->new ListCell<Picture>() {
-					
-				});*/
+				
+				imageView.setCellFactory(param -> new ListCell<Picture>() {
+					ImageView imagePic = new ImageView();
+					@Override
+					public void updateItem(Picture pic, boolean empty) {
+		                super.updateItem(pic, empty);
+		                if (empty) {
+		                    setText(null);
+		                    setGraphic(null);
+		                } else {
+		                	imagePic.setImage(pic.getPicture().getImage());
+		                    setText(pic.getCaption());
+		                    setGraphic(imagePic);
+		                }
+					}
+				});
 			}
 		});
 		
