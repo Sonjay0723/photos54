@@ -1,10 +1,13 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package controller;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
@@ -42,7 +45,14 @@ public class UserController {
 	@FXML private TextField albumTxt;
 	
 	public Stage primaryStage;
-
+	/**
+	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
+	 * The list of albums for the current user is initialized
+	 * 
+	 * @param primaryStage current stage
+	 * @param currUser the current user
+	 * @param userList the list of all users
+	 */
 	public void start(Stage primaryStage, User currUser, ArrayList<User> userList) {
 		
 		this.primaryStage = primaryStage;
@@ -62,6 +72,7 @@ public class UserController {
 			whatInfo(albumList);
 		}
 		
+		//disable/enable buttons appropriately
 		addBtn.disableProperty().bind(Bindings.isEmpty(albumTxt.textProperty()));
 		deleteBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
 		redirectAlbumBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
@@ -72,6 +83,7 @@ public class UserController {
 		else
 			editBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull().or(Bindings.isEmpty(albumTxt.textProperty())));
 		
+		//Add album to the list
 		addBtn.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like to add the album  "+albumTxt.getText()+" to the list?")) {
 				//Creating Album object
@@ -83,13 +95,17 @@ public class UserController {
 				whatInfo(albumList);
 		});
 		
+		//Delete selected album from the list
 		deleteBtn.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like to remove the album "+ listView.getSelectionModel().getSelectedItem().getTitle()+" from the list?")){
 				delete(albumList, currUser);
 				saveData(userList);
 			}
+			else
+				whatInfo(albumList);
 		});
 		
+		//Edit name of the album that is currently selected
 		editBtn.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like rename the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
 				edit(albumList,primaryStage, currUser);
@@ -99,6 +115,7 @@ public class UserController {
 				whatInfo(albumList);
 		});
 		
+		//Open selected album
 		redirectAlbumBtn.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like open the album "+listView.getSelectionModel().getSelectedItem().getTitle()+"?")){
 				this.primaryStage.close();
@@ -121,6 +138,7 @@ public class UserController {
 			}
 		});
 		
+		//logout of user and go to login page
 		logoutBtn.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -141,6 +159,7 @@ public class UserController {
 			}
 		});
 		
+		//search for pictures in a different scene
 		searchBtn.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -162,6 +181,14 @@ public class UserController {
 		});
 	}
 	
+	/**
+	 * method to Add a new Album to the User, initialized to be empty
+	 * 
+	 * @param newAlbum the new album to add for the current user
+	 * @param primaryStage the current stage
+	 * @param albumList the ObservableList to add the new album to
+	 * @param thisUser the user to add the new album to
+	 */
 	public void add(Album newAlbum, Stage primaryStage, ObservableList<Album> albumList, User thisUser){
 		
 		if(albumList.isEmpty()) {
@@ -196,7 +223,7 @@ public class UserController {
 					else if(i>=albumList.size()) {
 						
 						albumList.add(newAlbum);
-						//select User
+						//select Album
 						listView.setItems(albumList);
 						listView.getSelectionModel().select(albumList.size()-1);
 						whatInfo(albumList);
@@ -208,7 +235,7 @@ public class UserController {
 					else {
 						
 						albumList.add(i, newAlbum);
-						//select User
+						//select Album
 						listView.setItems(albumList);
 						listView.getSelectionModel().select(i);
 						whatInfo(albumList);
@@ -224,7 +251,7 @@ public class UserController {
 			}
 			
 			albumList.add(newAlbum);
-			//select User
+			//select Album
 			listView.setItems(albumList);
 			listView.getSelectionModel().select(albumList.size()-1);
 			whatInfo(albumList);
@@ -237,15 +264,21 @@ public class UserController {
 		return;
 	}
 	
+	/**
+	 * Method to delete selected album from user's albums
+	 * 
+	 * @param albumList observable list of User's albums from where to delete an album
+	 * @param thisUser the current user
+	 */
 	public void delete(ObservableList<Album> albumList, User thisUser){
 		
-		//delete current User
+		//delete current Album
 		int currIndex = listView.getSelectionModel().getSelectedIndex();
 		thisUser.removeAlbum(listView.getSelectionModel().getSelectedItem().getTitle());
 		albumList.remove(currIndex);
 		listView.setItems(albumList);
 		
-		//select next User in List or clear text fields if list is empty
+		//select next Album in List or clear text fields if list is empty
 		if(!albumList.isEmpty()) {
 			if(albumList.size() <= currIndex) {
 				listView.getSelectionModel().select(currIndex-1);
@@ -262,6 +295,13 @@ public class UserController {
 		return;
 	}
 	
+	/**
+	 * Method to edit name of current selected album
+	 * 
+	 * @param albumList ObservableList of albums from where to select album to be edited
+	 * @param primaryStage the current stage
+	 * @param thisUser the current user for which to edit the album information
+	 */
 	public void edit(ObservableList<Album> albumList, Stage primaryStage, User thisUser) {
 		
 		//find out which entries to edit
@@ -274,7 +314,7 @@ public class UserController {
 		newAlbum.setList(currAlbum.getPictureList());
 		delete(albumList, thisUser);
 		
-		//if the newSong does not exist in the albumlist, add it to the albumlist, otherwise add the original song back in
+		//if the newAlbum does not exist in the albumlist, add it to the albumlist, otherwise add the original album back in
 		if(!inList(newAlbum, primaryStage, albumList))
 			add(newAlbum,primaryStage, albumList, thisUser);
 		else
@@ -283,12 +323,20 @@ public class UserController {
 		return;
 	}
 	
-	//method to check if same title is already in albumList
+	/**
+	 * Method to Check if the picture is already in the picture list
+	 * 
+	 * @param search Picture to search for
+	 * @param primaryStage current stage
+	 * @param pictureList the picture list to search in to see if the picture already exists
+	 * 
+	 * @return True if it exists in the list, false otherwise
+	 */
 	public boolean inList(Album search, Stage primaryStage, ObservableList<Album> albumList){
 		if(albumList.isEmpty())
 			return false;
 		for(int i=0; i<albumList.size(); i++) {
-			if(albumList.get(i).compareTo(search) == 0) {
+			if(albumList.get(i).getTitle().toLowerCase().compareTo(search.getTitle().toLowerCase()) == 0) {
 				popUpMessage(primaryStage, "This Entry Already Exists in the List!");
 				return true;
 			}
@@ -296,7 +344,12 @@ public class UserController {
 		return false;
 	}
 	
-	//method to display values
+	/**
+	 * method to display values depending on what is selected in appropriate location
+	 * current album of current selected Picture
+	 * 
+	 * @param albumList the list from where items are selected
+	 */
 	public void whatInfo(ObservableList<Album> albumList) {
 		if(!albumList.isEmpty()) {
 			int currentIndex = listView.getSelectionModel().getSelectedIndex();
@@ -307,7 +360,12 @@ public class UserController {
 		}
 	}
 	
-	//method for warning signature
+	/**
+	 * method for warning signature
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText Text to show in warning
+	 */
 	public void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -316,7 +374,14 @@ public class UserController {
 		warning.showAndWait();
 	}
 	
-	//method to allow user to back out of decision
+	/**
+	 * method to allow user to back out of decision
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText text to show what to agree for
+	 * 
+	 * @return true if agreed, false otherwise
+	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);
@@ -334,7 +399,11 @@ public class UserController {
 		return false;
 	}
 	
-	//method to save User data
+	/**
+	 * method to save User data
+	 * 
+	 * @param userList the list of all users with certain information having been changed
+	 */
 	private void saveData(ArrayList<User> userList) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");

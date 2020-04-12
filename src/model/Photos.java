@@ -1,3 +1,8 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package model;
 	
 import javafx.application.Application;
@@ -6,10 +11,13 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.fxml.*;
 import controller.*;
-import view.*;
 
-
-public class Main extends Application {
+/**
+ * 
+ * main Class that starts application by opening Login Page
+ *
+ */
+public class Photos extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {

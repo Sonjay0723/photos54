@@ -1,4 +1,8 @@
-//Dhrishti Hazari and Jayson Pitta
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package controller;
 
 import java.io.*;
@@ -34,6 +38,15 @@ public class AdminController {
 
 	public Stage primaryStage;
 	
+	/**
+	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
+	 * The List of Users is initialized
+	 * 
+	 * @param primaryStage Current stage
+	 * @param arrayUsersList The list of users
+	 * @throws Exception during changing scene or saving data to file
+	 */
+	
 	public void start(Stage primaryStage, ArrayList<User> arrayUsersList) throws Exception {  
 		
 		ObservableList<User> usersList = FXCollections.observableArrayList(arrayUsersList);
@@ -51,9 +64,11 @@ public class AdminController {
 			whatInfo(usersList);
 		}
 		
+		//set button disable/enable value
 		addBtn.disableProperty().bind(Bindings.isEmpty(usernameTxt.textProperty()));
 		deleteBtn.disableProperty().bind(listView.getSelectionModel().selectedItemProperty().isNull());
 
+		//add a user
 		addBtn.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like to add "+usernameTxt.getText()+" to the list?")) {
 				//Creating User object
@@ -65,6 +80,7 @@ public class AdminController {
 				whatInfo(usersList);
 		});
 		
+		//delete a user
 		deleteBtn.setOnAction(event->{
 			if(usersList.isEmpty()) 
 				popUpMessage(primaryStage, "There is nothing selected to delete!");
@@ -77,6 +93,7 @@ public class AdminController {
 			saveData();
 		});
 		
+		//go back to login page
 		logoutBtn.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -98,7 +115,13 @@ public class AdminController {
 		});
 	}
 	
-	
+	/**
+	 * Method to add a new user to the list in the appropriate location
+	 * 
+	 * @param newUser the user to add to the list
+	 * @param primaryStage the current stage
+	 * @param usersList the list to add the new user to
+	 */
 	public void add(User newUser, Stage primaryStage, ObservableList<User> usersList){
 			
 		if(usersList.isEmpty()) {
@@ -170,6 +193,12 @@ public class AdminController {
 		return;
 	}
 	
+	/**
+	 * Method to delete user from the list
+	 * 
+	 * @param currentUser the user to delete
+	 * @param usersList the list to delete the user from
+	 */
 	public void delete(User currentUser, ObservableList<User> usersList){
 		
 		//delete current User
@@ -195,12 +224,20 @@ public class AdminController {
 		
 	}
 	
-	//method to check if same name+artist is already in usersList
+	/**
+	 * Method to check if User is already in the list 
+	 * 
+	 * @param search the user that is attempting to be added
+	 * @param primaryStage the current stage
+	 * @param usersList the list to search through to check if user exists
+	 * 
+	 * @return true if it does already exist, false otherwise
+	 */
 	public boolean inList(User search, Stage primaryStage, ObservableList<User> usersList){
 		if(usersList.isEmpty())
 			return false;
 		for(int i=0; i<usersList.size(); i++) {
-			if(usersList.get(i).compareTo(search) == 0) {
+			if(usersList.get(i).getUsername().toLowerCase().compareTo(search.getUsername().toLowerCase()) == 0) {
 				popUpMessage(primaryStage, "This Entry Already Exists in the List!");
 				return true;
 			}
@@ -208,7 +245,11 @@ public class AdminController {
 		return false;
 	}
 	
-	//method to display values
+	/**
+	 * method to display values depending on what is selected in appropriate location
+	 * 
+	 * @param usersList the list from where items are selected
+	 */
 	public void whatInfo(ObservableList<User> usersList) {
 		if(!usersList.isEmpty()) {
 			int currentIndex = listView.getSelectionModel().getSelectedIndex();
@@ -217,7 +258,12 @@ public class AdminController {
 		}
 	}
 	
-	//method for warning signature
+	/**
+	 * method for warning signature
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText Text to show in warning
+	 */
 	public void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -226,7 +272,14 @@ public class AdminController {
 		warning.showAndWait();
 	}
 	
-	//method to allow user to back out of decision
+	/**
+	 * method to allow user to back out of decision
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText text to show what to agree for
+	 * 
+	 * @return true if agreed, false otherwise
+	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);
@@ -244,7 +297,11 @@ public class AdminController {
 		return false;
 	}
 	
-	//method to create a StockAlbum
+	/**
+	 * method to create a StockAlbum
+	 * 
+	 * @return the stock album
+	 */
 	public Album addStockAlbum() {
 		//Create stock Album
 		Album stockAlbum = new Album("stock");
@@ -266,7 +323,11 @@ public class AdminController {
 		return stockAlbum;
 	}
 	
-	//method to save User data
+	/**
+	 * method to save User data
+	 * 
+	 * @param userList the list of all users with certain information having been changed
+	 */
 	private void saveData() {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");
