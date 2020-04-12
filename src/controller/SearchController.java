@@ -22,6 +22,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
@@ -43,8 +44,8 @@ public class SearchController {
 	@FXML private RadioButton choiceAnd;
 	@FXML private RadioButton choiceOr;
 	
-	@FXML private ChoiceBox<String> choiceTag1;
-	@FXML private ChoiceBox<String> choiceTag2;
+	@FXML private ComboBox<String> choiceTag1;
+	@FXML private ComboBox<String> choiceTag2;
 	
 	@FXML private DatePicker dateStart;
 	@FXML private DatePicker dateEnd;	
@@ -78,11 +79,10 @@ public class SearchController {
 		});
 		
 		btnSearch.setOnAction(event->{
-			anotherTag.getToggles().clear();
-			if ((choiceAnd.isSelected() || choiceOr.isSelected()) && (txtTag2.getText()=="")) {
+			if ((choiceAnd.isSelected() || choiceOr.isSelected()) && (txtTag2.getText().length()==0)) {
 				popUpMessage(primaryStage, "Please add a second tag");
 			}
-			else if ((dateStart.getValue()==null && dateEnd.getValue()==null) && txtTag1.getText()=="") {
+			else if ((dateStart.getValue()==null && dateEnd.getValue()==null) && txtTag1.getText().length()==0) {
 				popUpMessage(primaryStage, "Please select a date range or a tag");
 			}
 			else {
@@ -156,11 +156,11 @@ public class SearchController {
 				Picture curr = pics.get(j);
 				LocalDate start = dateStart.getValue();
 				LocalDate end = dateEnd.getValue();
-				Tag tag1 = new Tag(choiceTag1.getValue(), txtTag1.getText(), false);
+				Tag tag1 = txtTag1.getText().length() == 0 ? null : new Tag(choiceTag1.getValue(), txtTag1.getText(), false);
 				Tag tag2 = txtTag2.getText().length() == 0 ? null : new Tag(choiceTag2.getValue(), txtTag2.getText(), false);
 				
 				//checks if a pic is within the date range if provided, no tags
-				if (tag1.getValue().length() == 0) {
+				if (tag1 == null) {
 					checkDate(curr, start, end);
 				}
 				else if (tag2 == null) {
