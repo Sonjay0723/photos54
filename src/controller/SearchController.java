@@ -133,7 +133,7 @@ public class SearchController {
 	            UserController userView = loader.getController();
 	            Stage stage = new Stage();
 	            
-	            userView.start(stage, currUser, userList);
+	            userView.start(stage, currUser, userList, 0);
 	            Scene scene = new Scene(root);
 	            stage.setScene(scene);
 	            stage.show();
