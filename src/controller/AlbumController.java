@@ -1,4 +1,5 @@
 /**
+ /**
  * @author Dhrishti hazari
  * @author Jayson Pitta
  */
@@ -25,6 +26,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -71,6 +73,10 @@ public class AlbumController {
 	@FXML private Button slideshowNext;
 	@FXML private Button slideshowPrevious;
 	@FXML private ImageView slideshowImage;
+	
+	@FXML private Button btnMove;
+	@FXML private Button btnAdd;
+	@FXML private ChoiceBox<String> albumChoice;
 	
 	ObservableList<Tag> tagList;
 	public int currSlideShowImage = 0;
@@ -120,6 +126,12 @@ public class AlbumController {
 		currUser.addTagType(new TagType("location", false));
 		currUser.addTagType(new TagType("person", true));
 		currUser.addTagType(new TagType("event", false));
+		
+		albumChoice.getItems().add("Choose an Album");
+		for (int i = 0; i < currUser.getAlbumList().size(); i++) {
+			if (!currAlbum.equals(currUser.getAlbumList().get(i)))
+				albumChoice.getItems().add(currUser.getAlbumList().get(i).getTitle());
+		}
 		
 		//set up when user is allowed to delete a picture/tag/move to an album/ add to an album
 		deletePicture.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
@@ -277,6 +289,35 @@ public class AlbumController {
 		
 			} catch(Exception e) {
 				e.printStackTrace();
+			}
+		});
+		
+		//move picture to a new album
+		btnMove.setOnAction(event->{
+			if(pictureList.isEmpty()) 
+				popUpMessage(primaryStage, "There is no picture to select!");
+			else if (agreeOrDisagree(primaryStage, "Would you like to move " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
+					+ " to " + albumChoice.getValue() + "?")) {
+				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
+				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
+				
+				deletePic(pictureList, currAlbum);
+				addPic(chosenPic, primaryStage, pictureList, chosenAlbum);
+				saveData(userList);
+			}
+		});
+		
+		//copy picture to a new album
+		btnAdd.setOnAction(event->{
+			if(pictureList.isEmpty()) 
+				popUpMessage(primaryStage, "There is no picture to select!");
+			else if (agreeOrDisagree(primaryStage, "Would you like to add " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
+					+ " to " + albumChoice.getValue() + "?")) {
+				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
+				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
+				
+				addPic(chosenPic, primaryStage, pictureList, chosenAlbum);
+				saveData(userList);
 			}
 		});
 		

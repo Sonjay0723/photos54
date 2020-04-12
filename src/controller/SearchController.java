@@ -1,8 +1,3 @@
-/**
- * @author Dhrishti hazari
- * @author Jayson Pitta
- */
-
 package controller;
 
 import java.io.*;
@@ -10,14 +5,21 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import javafx.fxml.*;
 import model.*;
+import view.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
@@ -57,6 +59,11 @@ public class SearchController {
 		final ToggleGroup anotherTag = new ToggleGroup();
 		anotherTag.getToggles().addAll(choiceAnd, choiceOr);
 		
+		for (int i = 0; i < user.getTagTypes().size(); i++) {
+			choiceTag1.getItems().add(user.getTagTypes().get(i).getTagName());
+			choiceTag2.getItems().add(user.getTagTypes().get(i).getTagName());
+		}
+		
 		choiceTag2.setDisable(true);
 		txtTag2.setDisable(true);
 		
@@ -69,11 +76,27 @@ public class SearchController {
 			}
 			else {
 				search();
+				/*ObservableList<String> numList = FXCollections.observableArrayList();
+				for (int i = 0; i < imageList.size(); i++) {
+					numList.add(i + "");
+				}*/
 				imageView.setItems(imageList);
-				/*
-				imageView.setCellFactory(param->new ListCell<Picture>() {
-					
-				});*/
+				
+				imageView.setCellFactory(param -> new ListCell<Picture>() {
+					ImageView imagePic = new ImageView();
+					@Override
+					public void updateItem(Picture pic, boolean empty) {
+		                super.updateItem(pic, empty);
+		                if (empty) {
+		                    setText(null);
+		                    setGraphic(null);
+		                } else {
+		                	imagePic.setImage(pic.getPicture().getImage());
+		                    setText(pic.getCaption());
+		                    setGraphic(imagePic);
+		                }
+					}
+				});
 			}
 		});
 		
