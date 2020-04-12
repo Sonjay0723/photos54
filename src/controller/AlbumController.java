@@ -120,6 +120,7 @@ public Stage primaryStage;
 		currUser.addTagType(new TagType("event", false));
 		
 		albumChoice.getItems().add("Choose an Album");
+		albumChoice.setValue("Choose an Album");
 		for (int i = 0; i < currUser.getAlbumList().size(); i++) {
 			if (!currAlbum.equals(currUser.getAlbumList().get(i)))
 				albumChoice.getItems().add(currUser.getAlbumList().get(i).getTitle());
@@ -225,6 +226,8 @@ public Stage primaryStage;
 		btnMove.setOnAction(event->{
 			if(pictureList.isEmpty()) 
 				popUpMessage(primaryStage, "There is no picture to select!");
+			else if (albumChoice.getValue().equals("Choose an Album"))
+				popUpMessage(primaryStage, "There is no Album selected to add a tag for!");
 			else if (agreeOrDisagree(primaryStage, "Would you like to move " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
 					+ " to " + albumChoice.getValue() + "?")) {
 				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
@@ -239,6 +242,8 @@ public Stage primaryStage;
 		btnAdd.setOnAction(event->{
 			if(pictureList.isEmpty()) 
 				popUpMessage(primaryStage, "There is no picture to select!");
+			else if (albumChoice.getValue().equals("Choose an Album"))
+				popUpMessage(primaryStage, "There is no Album selected to add a tag for!");
 			else if (agreeOrDisagree(primaryStage, "Would you like to add " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
 					+ " to " + albumChoice.getValue() + "?")) {
 				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
