@@ -67,7 +67,18 @@ public class SearchController {
 		choiceTag2.setDisable(true);
 		txtTag2.setDisable(true);
 		
+		choiceAnd.setOnAction(event->{
+			choiceTag2.setDisable(false);
+			txtTag2.setDisable(false);
+		});
+		
+		choiceOr.setOnAction(event->{
+			choiceTag2.setDisable(false);
+			txtTag2.setDisable(false);
+		});
+		
 		btnSearch.setOnAction(event->{
+			anotherTag.getToggles().clear();
 			if ((choiceAnd.isSelected() || choiceOr.isSelected()) && (txtTag2.getText()=="")) {
 				popUpMessage(primaryStage, "Please add a second tag");
 			}
@@ -76,10 +87,6 @@ public class SearchController {
 			}
 			else {
 				search();
-				/*ObservableList<String> numList = FXCollections.observableArrayList();
-				for (int i = 0; i < imageList.size(); i++) {
-					numList.add(i + "");
-				}*/
 				imageView.setItems(imageList);
 				
 				imageView.setCellFactory(param -> new ListCell<Picture>() {
@@ -92,6 +99,8 @@ public class SearchController {
 		                    setGraphic(null);
 		                } else {
 		                	imagePic.setImage(pic.getPicture().getImage());
+		                	imagePic.setPreserveRatio(true);
+		                	imagePic.setFitHeight(100);
 		                    setText(pic.getCaption());
 		                    setGraphic(imagePic);
 		                }
@@ -132,18 +141,6 @@ public class SearchController {
 				e.printStackTrace();
 			}
 		});
-	}
-	
-	@FXML
-	private void handleButtonAction(ActionEvent e) {
-		if (choiceAnd.isSelected() || choiceOr.isSelected()) {
-			choiceTag2.setDisable(false);
-			txtTag2.setDisable(false);
-		}
-		else {
-			choiceTag2.setDisable(true);
-			txtTag2.setDisable(true);
-		}
 	}
 	
 	private void search() {
