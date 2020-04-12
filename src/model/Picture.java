@@ -167,7 +167,7 @@ public class Picture implements Serializable {
 	 * 
 	 * @param currPicture Picture to compare to 
 	 * 
-	 * @return 0 if equal, any number >/< 0 otherwise depending on order of picture name's
+	 * @return 0 if equal, any number greater/less than 0 otherwise depending on order of picture name's
 	 */
 	public int compareTo(Picture currPicture) {
 		return this.getPictureName().toLowerCase().compareTo(currPicture.getPictureName().toLowerCase());

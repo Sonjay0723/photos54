@@ -152,7 +152,7 @@ public class User implements Serializable{
 	 * 
 	 * @param currUser User to compare to
 	 * 
-	 * @return true if usernames are equal, false otherwise
+	 * @return 0 if equal, any number greater/less than 0 otherwise depending on order of users's username
 	 */
 	public int compareTo(User currUser) {
 		return this.getUsername().toLowerCase().compareTo(currUser.getUsername().toLowerCase());

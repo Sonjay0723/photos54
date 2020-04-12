@@ -8,6 +8,8 @@ package controller;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
@@ -61,7 +63,7 @@ public class AddTagController {
 	 * @param currPicture The current picture for which to add tags for
 	 * @param currAlbum The Current Album the picture is In
 	 * @param index The index of the Current Picture in the Current Album
-	 * @param albumIndex is the index of the current album for the user page
+	 * @param AlbumIndex is the index of the current album for the user page
 	 */
 	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Picture currPicture, Album currAlbum, int index, int AlbumIndex) {
 		
@@ -111,6 +113,8 @@ public class AddTagController {
 				
 				//adding tag to User + Observable List
 				tagTypeList.add(newTagName);
+				Comparator<TagType> comparator = Comparator.comparing(TagType::getTagName);
+				Collections.sort(tagTypeList, comparator);
 				typeView.setItems(tagTypeList);
 				
 				for(int i=0; i< tagTypeList.size(); i++) {

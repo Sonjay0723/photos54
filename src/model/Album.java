@@ -143,7 +143,7 @@ public class Album implements Serializable {
 	 * 
 	 * @param currAlbum Current album to compare
 	 * 
-	 * @return 0 if equal, any number >/< 0 otherwise depending on order of album title's
+	 * @return 0 if equal, any number greater/less than 0 otherwise depending on order of album title's
 	 */
 	public int compareTo(Album currAlbum) {
 		return this.getTitle().toLowerCase().compareTo(currAlbum.getTitle().toLowerCase());

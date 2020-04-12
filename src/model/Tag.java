@@ -78,7 +78,7 @@ public class Tag implements Serializable {
 	 * 
 	 * @param currTag Tag to compare to 
 	 * 
-	 * @return 0 if equal, any number >/< 0 otherwise depending on order of tag's name-value
+	 * @return 0 if equal, any number greater/less than 0 otherwise depending on order of tag's name-value
 	 */
 	public int compareTo(Tag currTag) {
 		return this.toString().toLowerCase().compareTo(currTag.toString().toLowerCase());
