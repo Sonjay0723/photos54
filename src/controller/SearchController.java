@@ -5,17 +5,24 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import javafx.fxml.*;
 import model.*;
+import view.*;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
@@ -37,21 +44,14 @@ public class SearchController {
 	@FXML private RadioButton choiceAnd;
 	@FXML private RadioButton choiceOr;
 	
-	@FXML private ChoiceBox<String> choiceTag1;
-	@FXML private ChoiceBox<String> choiceTag2;
+	@FXML private ComboBox<String> choiceTag1;
+	@FXML private ComboBox<String> choiceTag2;
 	
 	@FXML private DatePicker dateStart;
 	@FXML private DatePicker dateEnd;	
 	
 	public Stage primaryStage;
 	
-	/**
-	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
-	 * 
-	 * @param primaryStage current stage
-	 * @param user the current user
-	 * @param userList the list of users
-	 */
 	public void start(Stage primaryStage, User user, ArrayList<User> userList) {
 		
 		this.primaryStage = primaryStage;
@@ -68,20 +68,26 @@ public class SearchController {
 		choiceTag2.setDisable(true);
 		txtTag2.setDisable(true);
 		
+		choiceAnd.setOnAction(event->{
+			choiceTag2.setDisable(false);
+			txtTag2.setDisable(false);
+		});
+		
+		choiceOr.setOnAction(event->{
+			choiceTag2.setDisable(false);
+			txtTag2.setDisable(false);
+		});
+		
 		//search for pictures given date range and/or tag-value pair(s)
 		btnSearch.setOnAction(event->{
-			if ((choiceAnd.isSelected() || choiceOr.isSelected()) && (txtTag2.getText()=="")) {
+			if ((choiceAnd.isSelected() || choiceOr.isSelected()) && (txtTag2.getText().length()==0)) {
 				popUpMessage(primaryStage, "Please add a second tag");
 			}
-			else if ((dateStart.getValue()==null && dateEnd.getValue()==null) && txtTag1.getText()=="") {
+			else if ((dateStart.getValue()==null && dateEnd.getValue()==null) && txtTag1.getText().length()==0) {
 				popUpMessage(primaryStage, "Please select a date range or a tag");
 			}
 			else {
 				search();
-				/*ObservableList<String> numList = FXCollections.observableArrayList();
-				for (int i = 0; i < imageList.size(); i++) {
-					numList.add(i + "");
-				}*/
 				imageView.setItems(imageList);
 				
 				imageView.setCellFactory(param -> new ListCell<Picture>() {
@@ -94,6 +100,8 @@ public class SearchController {
 		                    setGraphic(null);
 		                } else {
 		                	imagePic.setImage(pic.getPicture().getImage());
+		                	imagePic.setPreserveRatio(true);
+		                	imagePic.setFitHeight(100);
 		                    setText(pic.getCaption());
 		                    setGraphic(imagePic);
 		                }
@@ -102,7 +110,6 @@ public class SearchController {
 			}
 		});
 		
-		//Create a new album with the search results
 		btnCreate.setOnAction(event->{
 			if (txtAlbum.getText() == "")
 				popUpMessage(primaryStage, "Please add an album name");
@@ -116,7 +123,6 @@ public class SearchController {
 			}
 		});
 		
-		//Go back to User page
 		btnClose.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -127,7 +133,7 @@ public class SearchController {
 	            UserController userView = loader.getController();
 	            Stage stage = new Stage();
 	            
-	            userView.start(stage, currUser, userList,0);
+	            userView.start(stage, currUser, userList, 0);
 	            Scene scene = new Scene(root);
 	            stage.setScene(scene);
 	            stage.show();
@@ -138,26 +144,6 @@ public class SearchController {
 		});
 	}
 	
-	/**
-	 * Method to handle selection of radio buttons, only one can be elected at a time!
-	 * 
-	 * @param e the action of selecting/De-selecting radio buttons
-	 */
-	@FXML
-	private void handleButtonAction(ActionEvent e) {
-		if (choiceAnd.isSelected() || choiceOr.isSelected()) {
-			choiceTag2.setDisable(false);
-			txtTag2.setDisable(false);
-		}
-		else {
-			choiceTag2.setDisable(true);
-			txtTag2.setDisable(true);
-		}
-	}
-	
-	/**
-	 * Method to search for pictures by dates and/or tag-value pairs
-	 */
 	private void search() {
 		imageList.removeAll();
 		
@@ -171,11 +157,11 @@ public class SearchController {
 				Picture curr = pics.get(j);
 				LocalDate start = dateStart.getValue();
 				LocalDate end = dateEnd.getValue();
-				Tag tag1 = new Tag(choiceTag1.getValue(), txtTag1.getText(), false);
+				Tag tag1 = txtTag1.getText().length() == 0 ? null : new Tag(choiceTag1.getValue(), txtTag1.getText(), false);
 				Tag tag2 = txtTag2.getText().length() == 0 ? null : new Tag(choiceTag2.getValue(), txtTag2.getText(), false);
 				
 				//checks if a pic is within the date range if provided, no tags
-				if (tag1.getValue().length() == 0) {
+				if (tag1 == null) {
 					checkDate(curr, start, end);
 				}
 				else if (tag2 == null) {
@@ -220,9 +206,6 @@ public class SearchController {
 		}
 	}
 	
-	/**
-	 * Method to create a new album for the user given the search results
-	 */
 	private void createAlbum() {
 		String albumName = txtAlbum.getText();
 		
@@ -241,13 +224,6 @@ public class SearchController {
 		currUser.addAlbum(res);
 	}
 	
-	/**
-	 * Method to check whether or not to add the picture based on whether or not it is within the specified date range
-	 * 
-	 * @param pic The picture that is being checked to see if it has the appropriate dates
-	 * @param start
-	 * @param end
-	 */
 	private void checkDate(Picture pic, LocalDate start, LocalDate end) {
 		LocalDate day = LocalDateTime.ofInstant(pic.getDate().toInstant(), pic.getDate().getTimeZone().toZoneId()).toLocalDate();
 		
@@ -261,12 +237,6 @@ public class SearchController {
 			imageList.add(pic);
 	}
 	
-	/**
-	 * method for warning signature
-	 * 
-	 * @param primaryStage current stage
-	 * @param displayText Text to show in warning
-	 */
 	private void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -275,14 +245,6 @@ public class SearchController {
 		warning.showAndWait();
 	}
 	
-	/**
-	 * method to allow user to back out of decision
-	 * 
-	 * @param primaryStage current stage
-	 * @param displayText text to show what to agree for
-	 * 
-	 * @return true if agreed, false otherwise
-	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);
@@ -300,11 +262,7 @@ public class SearchController {
 		return false;
 	}
 	
-	/**
-	 * method to save User data
-	 * 
-	 * @param userList the list of all users with certain information having been changed
-	 */
+	//method to save User data
 	private void saveData(ArrayList<User> userList) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");

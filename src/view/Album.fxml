@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -9,7 +14,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="637.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="637.0" prefWidth="661.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AlbumController">
    <children>
       <Label id="lblAlbumName" fx:id="albumTitle" layoutX="30.0" layoutY="14.0" prefHeight="53.0" prefWidth="359.0" textAlignment="CENTER" textFill="#da1111">
          <font>
@@ -35,28 +40,31 @@
             <Font size="12.0" />
          </font>
       </Button>
-      <ListView fx:id="listViewTag" layoutX="440.0" layoutY="85.0" prefHeight="208.0" prefWidth="200.0" style="-fx-background-color: #ff6347;" />
+      <ListView fx:id="listViewTag" layoutX="440.0" layoutY="92.0" prefHeight="208.0" prefWidth="200.0" style="-fx-background-color: #ff6347;" />
       <Label id="lblTag" layoutX="440.0" layoutY="67.0" text="Tags:" />
-      <Button fx:id="addTag" layoutX="441.0" layoutY="301.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="100.0" style="-fx-background-color: #ff6347;" text="Add Tag">
+      <Button fx:id="addTag" layoutX="441.0" layoutY="306.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Add Tag">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="deleteTag" layoutX="549.0" layoutY="301.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Delete Tag">
+      <Button fx:id="deleteTag" layoutX="549.0" layoutY="306.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Delete Tag">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
+      <Button id="btnSlideshow" fx:id="toSlideShow" layoutX="486.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="70.0" style="-fx-background-color: #ff6347;" text="Slideshow" />
       <ListView fx:id="listViewImg" layoutX="26.0" layoutY="80.0" prefHeight="299.0" prefWidth="228.0" style="-fx-background-color: #ff6347;" />
       <Button id="btnSlideshow" fx:id="logout" layoutX="574.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="54.0" style="-fx-background-color: #ff6347;" text="Logout" />
       <TextField fx:id="showCaption" layoutX="280.0" layoutY="229.0" prefHeight="78.0" prefWidth="135.0" style="-fx-text-fill: #FFFFFF; -fx-background-color: #800000;" />
       <TextField fx:id="showDate" editable="false" layoutX="280.0" layoutY="336.0" prefHeight="39.0" prefWidth="135.0" style="-fx-text-fill: #FFFFFF; -fx-background-color: #800000;" />
-      <Button fx:id="btnMove" layoutX="441.0" layoutY="349.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Move to Album:" textAlignment="CENTER" wrapText="true">
+      <Button id="btnSlideshow" fx:id="toUserPage" layoutX="410.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" style="-fx-background-color: #ff6347;" text="Back" />
+      <ComboBox fx:id="albumChoice" layoutX="440.0" layoutY="430.0" prefHeight="39.0" prefWidth="200.0" style="-fx-background-color: #ff6347;" />
+      <Button fx:id="btnMove" layoutX="440.0" layoutY="372.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Move to Album:" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
       </Button>
-      <Button fx:id="btnAdd" layoutX="549.0" layoutY="349.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Copy to Album:" textAlignment="CENTER" wrapText="true">
+      <Button fx:id="btnAdd" layoutX="549.0" layoutY="372.0" mnemonicParsing="false" prefHeight="53.0" prefWidth="91.0" style="-fx-background-color: #ff6347;" text="Add to Album:" textAlignment="CENTER" wrapText="true">
          <font>
             <Font size="14.0" />
          </font>
@@ -67,7 +75,7 @@
       <TextField fx:id="showCaption" layoutX="280.0" layoutY="229.0" prefHeight="78.0" prefWidth="135.0" style="-fx-text-fill: #FFFFFF; -fx-background-color: #800000;" />
       <TextField fx:id="showDate" editable="false" layoutX="280.0" layoutY="336.0" prefHeight="39.0" prefWidth="135.0" style="-fx-text-fill: #FFFFFF; -fx-background-color: #800000;" />
       <Button id="btnSlideshow" fx:id="toUserPage" layoutX="501.0" layoutY="22.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="60.0" style="-fx-background-color: #ff6347;" text="Back" />
-      <Label id="lblAlbumName" layoutX="260.0" layoutY="443.0" prefHeight="53.0" prefWidth="175.0" text="Slideshow" textAlignment="RIGHT" textFill="#da1111">
+      <Label id="lblAlbumName" layoutX="112.0" layoutY="443.0" prefHeight="53.0" prefWidth="280.0" text="Album Slideshow" textAlignment="RIGHT" textFill="#da1111">
          <font>
             <Font size="36.0" />
          </font>
@@ -83,6 +91,5 @@
             <Font size="14.0" />
          </font>
       </Button>
-      <ComboBox fx:id="albumChoice" layoutX="441.0" layoutY="411.0" prefHeight="25.0" prefWidth="200.0" promptText="Choose an Album" style="-fx-background-color: #ff6347;" />
    </children>
 </AnchorPane>

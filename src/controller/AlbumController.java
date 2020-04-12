@@ -28,6 +28,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -120,6 +121,23 @@ public class AlbumController {
 			});*/
 			
 			listViewImg.setItems(pictureList);
+			listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+				ImageView imagePic = new ImageView();
+				@Override
+				public void updateItem(Picture pic, boolean empty) {
+	                super.updateItem(pic, empty);
+	                if (empty) {
+	                    setText(null);
+	                    setGraphic(null);
+	                } else {
+	                	imagePic.setImage(pic.getPicture().getImage());
+	                	imagePic.setPreserveRatio(true);
+	                	imagePic.setFitHeight(60);
+	                    setText(pic.getCaption());
+	                    setGraphic(imagePic);
+	                }
+				}
+			});
 			listViewImg.getSelectionModel().select(index);
 			whatInfo(pictureList);
 			
@@ -384,6 +402,23 @@ public class AlbumController {
 						
 						if(forThisAlbum == 0) {
 							listViewImg.setItems(pictureList);
+							listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+								ImageView imagePic = new ImageView();
+								@Override
+								public void updateItem(Picture pic, boolean empty) {
+					                super.updateItem(pic, empty);
+					                if (empty) {
+					                    setText(null);
+					                    setGraphic(null);
+					                } else {
+					                	imagePic.setImage(pic.getPicture().getImage());
+					                	imagePic.setPreserveRatio(true);
+					                	imagePic.setFitHeight(60);
+					                    setText(pic.getCaption());
+					                    setGraphic(imagePic);
+					                }
+								}
+							});
 							listViewImg.getSelectionModel().select(0);
 							whatInfo(pictureList);
 						}
@@ -398,6 +433,23 @@ public class AlbumController {
 
 						if(forThisAlbum == 0) {
 							listViewImg.setItems(pictureList);
+							listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+								ImageView imagePic = new ImageView();
+								@Override
+								public void updateItem(Picture pic, boolean empty) {
+					                super.updateItem(pic, empty);
+					                if (empty) {
+					                    setText(null);
+					                    setGraphic(null);
+					                } else {
+					                	imagePic.setImage(pic.getPicture().getImage());
+					                	imagePic.setPreserveRatio(true);
+					                	imagePic.setFitHeight(60);
+					                    setText(pic.getCaption());
+					                    setGraphic(imagePic);
+					                }
+								}
+							});
 							listViewImg.getSelectionModel().select(pictureList.size()-1);
 							whatInfo(pictureList);
 						}
@@ -412,6 +464,23 @@ public class AlbumController {
 						
 						if(forThisAlbum == 0) {
 							listViewImg.setItems(pictureList);
+							listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+								ImageView imagePic = new ImageView();
+								@Override
+								public void updateItem(Picture pic, boolean empty) {
+					                super.updateItem(pic, empty);
+					                if (empty) {
+					                    setText(null);
+					                    setGraphic(null);
+					                } else {
+					                	imagePic.setImage(pic.getPicture().getImage());
+					                	imagePic.setPreserveRatio(true);
+					                	imagePic.setFitHeight(60);
+					                    setText(pic.getCaption());
+					                    setGraphic(imagePic);
+					                }
+								}
+							});
 							listViewImg.getSelectionModel().select(i);
 							whatInfo(pictureList);
 						}
@@ -430,6 +499,23 @@ public class AlbumController {
 			
 			if(forThisAlbum == 0) {
 				listViewImg.setItems(pictureList);
+				listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+					ImageView imagePic = new ImageView();
+					@Override
+					public void updateItem(Picture pic, boolean empty) {
+		                super.updateItem(pic, empty);
+		                if (empty) {
+		                    setText(null);
+		                    setGraphic(null);
+		                } else {
+		                	imagePic.setImage(pic.getPicture().getImage());
+		                	imagePic.setPreserveRatio(true);
+		                	imagePic.setFitHeight(60);
+		                    setText(pic.getCaption());
+		                    setGraphic(imagePic);
+		                }
+					}
+				});
 				listViewImg.getSelectionModel().select(pictureList.size()-1);
 				whatInfo(pictureList);
 			}
