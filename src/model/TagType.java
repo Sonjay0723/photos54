@@ -8,7 +8,7 @@ package model;
 import java.io.Serializable;
 
 public class TagType implements Serializable{
-	
+
 	/**
 	 * SerialID for Tag Class
 	 * name of tag(tag type)

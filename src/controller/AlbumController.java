@@ -109,35 +109,28 @@ public class AlbumController {
         .selectedIndexProperty()
         .addListener((obs, oldVal, newVal) -> whatInfo(pictureList));
 		
+		//Make it such that image+caption shows in ListView
+		listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+			ImageView imagePic = new ImageView();
+			@Override
+			public void updateItem(Picture pic, boolean empty) {
+                super.updateItem(pic, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                	imagePic.setImage(pic.getPicture().getImage());
+                	imagePic.setPreserveRatio(true);
+                	imagePic.setFitHeight(60);
+                    setText(pic.getCaption());
+                    setGraphic(imagePic);
+                }
+			}
+		});
+		
 		if(!pictureList.isEmpty()) {
 			
-			//TODO listView of thumbnails
-			
-			/*listViewImg.setCellFactory(new Callback<ListView<Picture>, ListCell<Picture>>() {
-				@Override
-				public ListCell<Picture> call(ListView<Picture> photoList) {
-					return new PhotoCell();
-				}
-			});*/
-			
 			listViewImg.setItems(pictureList);
-			listViewImg.setCellFactory(param -> new ListCell<Picture>() {
-				ImageView imagePic = new ImageView();
-				@Override
-				public void updateItem(Picture pic, boolean empty) {
-	                super.updateItem(pic, empty);
-	                if (empty) {
-	                    setText(null);
-	                    setGraphic(null);
-	                } else {
-	                	imagePic.setImage(pic.getPicture().getImage());
-	                	imagePic.setPreserveRatio(true);
-	                	imagePic.setFitHeight(60);
-	                    setText(pic.getCaption());
-	                    setGraphic(imagePic);
-	                }
-				}
-			});
 			listViewImg.getSelectionModel().select(index);
 			whatInfo(pictureList);
 			
@@ -233,6 +226,23 @@ public class AlbumController {
 				//update binding based on whatever is selected
 				BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
 				editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
+				listViewImg.setCellFactory(param -> new ListCell<Picture>() {
+					ImageView imagePic = new ImageView();
+					@Override
+					public void updateItem(Picture pic, boolean empty) {
+		                super.updateItem(pic, empty);
+		                if (empty) {
+		                    setText(null);
+		                    setGraphic(null);
+		                } else {
+		                	imagePic.setImage(pic.getPicture().getImage());
+		                	imagePic.setPreserveRatio(true);
+		                	imagePic.setFitHeight(60);
+		                    setText(pic.getCaption());
+		                    setGraphic(imagePic);
+		                }
+					}
+				});
 			}
 			else
 				whatInfo(pictureList);

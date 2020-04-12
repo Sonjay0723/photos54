@@ -79,8 +79,6 @@ public class AddTagController {
 		createNewType.disableProperty().bind(isTagFieldEmpty);
 		multiVal.disableProperty().bind(isTagFieldEmpty);
 		singleVal.disableProperty().bind(isTagFieldEmpty);
-		
-		//set up when user is allowed to add new value
 		BooleanBinding isValueFieldEmpty = Bindings.isEmpty(newValue.textProperty());
 		addTag.disableProperty().bind(isValueFieldEmpty.or(typeView.getSelectionModel().selectedItemProperty().isNull()));
 		

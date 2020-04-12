@@ -14,13 +14,12 @@ import java.util.Date;
 import java.util.Objects;
 
 public class Album implements Serializable {
-	
 	/**
 	 * SerialID for Album Class
 	 * Title of album
 	 * Arraylist of pictures within album
 	 */
-	private static final long serialVersionUID = -3937601520397862461L;
+	private static final long serialVersionUID = -9155495546523356913L;
 	public String title;
 	public ArrayList<Picture> pictureList = new ArrayList<Picture>();
 	

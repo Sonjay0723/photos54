@@ -13,12 +13,12 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="571.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.SearchController">
    <children>
-      <RadioButton fx:id="choiceAnd" layoutX="129.0" layoutY="223.0" mnemonicParsing="false" text="AND" />
-      <RadioButton fx:id="choiceOr" layoutX="213.0" layoutY="223.0" mnemonicParsing="false" text="OR" />
-      <ComboBox fx:id="choiceTag1" layoutX="124.0" layoutY="168.0" prefWidth="150.0" promptText="Tag Category" style="-fx-background-color: #ff6347;" />
-      <ComboBox fx:id="choiceTag2" layoutX="124.0" layoutY="262.0" prefWidth="150.0" promptText="Tag Category" style="-fx-background-color: #ff6347;" />
-      <TextField fx:id="txtTag1" layoutX="291.0" layoutY="168.0" promptText="Enter Value" style="-fx-background-color: #ff6347;" />
-      <TextField fx:id="txtTag2" layoutX="291.0" layoutY="262.0" promptText="Enter Value" style="-fx-background-color: #ff6347;" />
+      <RadioButton fx:id="choiceAnd" layoutX="127.0" layoutY="225.0" mnemonicParsing="false" text="AND" />
+      <RadioButton fx:id="choiceOr" layoutX="213.0" layoutY="225.0" mnemonicParsing="false" text="OR" />
+      <ComboBox fx:id="choiceTag1" layoutX="124.0" layoutY="175.0" prefWidth="150.0" style="-fx-background-color: #ff6347;" />
+      <ComboBox fx:id="choiceTag2" layoutX="124.0" layoutY="279.0" prefWidth="150.0" style="-fx-background-color: #ff6347;" />
+      <TextField fx:id="txtTag1" layoutX="291.0" layoutY="175.0" promptText="Enter Value" style="-fx-background-color: #800000; -fx-text-fill: #FFFFFF;" />
+      <TextField fx:id="txtTag2" layoutX="291.0" layoutY="279.0" promptText="Enter Value" style="-fx-background-color: #800000; -fx-text-fill: #FFFFFF;" />
       <DatePicker fx:id="dateStart" layoutX="122.0" layoutY="102.0" prefHeight="39.0" prefWidth="191.0" />
       <Label id="lblDate" layoutX="42.0" layoutY="104.0" text="Date:">
          <font>
@@ -33,25 +33,27 @@
             <Font size="24.0" />
          </font>
       </Label>
-      <Label id="lblTag2" layoutX="47.0" layoutY="264.0" text="Tag:">
+      <Label id="lblTag2" layoutX="47.0" layoutY="274.0" text="Tag:">
          <font>
             <Font size="24.0" />
          </font>
       </Label>
-      <Button fx:id="btnSearch" layoutX="443.0" layoutY="305.0" mnemonicParsing="false" text="Search" />
-      <ListView fx:id="imageView" layoutX="51.0" layoutY="387.0" prefHeight="193.0" prefWidth="469.0" style="-fx-background-color: #ff6347;" />
-      <Label id="lblSearch" layoutX="47.0" layoutY="22.0" text="Search" textFill="#ff5100">
+      <Button fx:id="btnSearch" layoutX="466.0" layoutY="303.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="70.0" style="-fx-background-color: #ff6347;" text="Search" />
+      <ListView fx:id="imageView" layoutX="51.0" layoutY="369.0" prefHeight="211.0" prefWidth="488.0" style="-fx-background-color: #ff6347;" />
+      <Label id="lblSearch" layoutX="47.0" layoutY="22.0" text="Search" textFill="#da1111">
          <font>
             <Font size="36.0" />
          </font>
       </Label>
-      <TextField fx:id="txtAlbum" layoutX="51.0" layoutY="590.0" promptText="New Album Name" style="-fx-background-color: #ff6347;" />
-      <Button fx:id="btnCreate" layoutX="280.0" layoutY="590.0" mnemonicParsing="false" text="Create" />
-      <Text layoutX="51.0" layoutY="373.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Resulting Image List">
+      <TextField fx:id="txtAlbum" layoutX="50.0" layoutY="590.0" prefHeight="35.0" prefWidth="149.0" promptText="New Album Name" style="-fx-background-color: #800000; -fx-text-fill: #FFFFFF;" />
+      <Button fx:id="btnCreate" layoutX="218.0" layoutY="590.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="51.0" style="-fx-background-color: #ff6347;" text="Create" />
+      <Text layoutX="51.0" layoutY="358.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Resulting Image List">
          <font>
             <Font size="27.0" />
          </font>
       </Text>
-      <Button fx:id="btnClose" layoutX="453.0" layoutY="590.0" mnemonicParsing="false" text="Close" />
+      <Button fx:id="btnClose" layoutX="481.0" layoutY="22.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="55.0" style="-fx-background-color: #ff6347;" text="Back" />
+      <Text layoutX="125.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose Tag Category:" />
+      <Text layoutX="124.0" layoutY="270.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Choose Tag Category:" />
    </children>
 </AnchorPane>

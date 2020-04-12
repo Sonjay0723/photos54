@@ -1,28 +1,28 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package controller;
 
 import java.io.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import javafx.fxml.*;
 import model.*;
-import view.*;
-
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
@@ -52,31 +52,41 @@ public class SearchController {
 	
 	public Stage primaryStage;
 	
+	final ToggleGroup andOr = new ToggleGroup();
+	
+	/**
+	+* All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
+	* 
+	* @param primaryStage current stage
+	* @param user the current user
+	* @param userList the list of users
+	*/
 	public void start(Stage primaryStage, User user, ArrayList<User> userList) {
 		
 		this.primaryStage = primaryStage;
 		currUser = user;
-		
-		final ToggleGroup anotherTag = new ToggleGroup();
-		anotherTag.getToggles().addAll(choiceAnd, choiceOr);
 		
 		for (int i = 0; i < user.getTagTypes().size(); i++) {
 			choiceTag1.getItems().add(user.getTagTypes().get(i).getTagName());
 			choiceTag2.getItems().add(user.getTagTypes().get(i).getTagName());
 		}
 		
-		choiceTag2.setDisable(true);
-		txtTag2.setDisable(true);
-		
-		choiceAnd.setOnAction(event->{
-			choiceTag2.setDisable(false);
-			txtTag2.setDisable(false);
-		});
-		
-		choiceOr.setOnAction(event->{
-			choiceTag2.setDisable(false);
-			txtTag2.setDisable(false);
-		});
+		//disable/enable Buttons and text fields
+		choiceAnd.setToggleGroup(andOr);
+		choiceOr.setToggleGroup(andOr);
+		txtAlbum.disableProperty().bind(Bindings.size(imageList).isEqualTo(0));
+		btnCreate.disableProperty().bind(Bindings.size(imageList).isEqualTo(0).or(Bindings.isEmpty(txtAlbum.textProperty())));
+		txtTag1.disableProperty().bind(choiceTag1.getSelectionModel().selectedItemProperty().isNull());
+		choiceAnd.disableProperty().bind(choiceTag1.getSelectionModel().selectedItemProperty().isNull().or(Bindings.isEmpty(txtTag1.textProperty())));
+		choiceOr.disableProperty().bind(choiceTag1.getSelectionModel().selectedItemProperty().isNull().or(Bindings.isEmpty(txtTag1.textProperty())));
+		choiceTag2.disableProperty().bind(choiceAnd.selectedProperty().not().and(choiceOr.selectedProperty().not()));
+		txtTag2.disableProperty().bind(choiceTag2.getSelectionModel().selectedItemProperty().isNull());
+		btnSearch.disableProperty().bind(
+				(choiceTag1.getSelectionModel().selectedItemProperty().isNotNull().and(Bindings.isEmpty(txtTag1.textProperty())))
+				.or(choiceTag2.getSelectionModel().selectedItemProperty().isNotNull().and(Bindings.isEmpty(txtTag2.textProperty())))
+				//.or(dateStart.accessibleTextProperty().isNotNull().and(dateEnd.accessibleTextProperty().isNull()))
+				//.or(dateEnd.accessibleTextProperty().isNotNull().and(dateStart.accessibleTextProperty().isNull()))
+		);
 		
 		//search for pictures given date range and/or tag-value pair(s)
 		btnSearch.setOnAction(event->{
@@ -87,6 +97,7 @@ public class SearchController {
 				popUpMessage(primaryStage, "Please select a date range or a tag");
 			}
 			else {
+				imageList.clear();
 				search();
 				imageView.setItems(imageList);
 				
@@ -102,27 +113,37 @@ public class SearchController {
 		                	imagePic.setImage(pic.getPicture().getImage());
 		                	imagePic.setPreserveRatio(true);
 		                	imagePic.setFitHeight(100);
-		                    setText(pic.getCaption());
+		                	String pattern = "MM/dd/yyyy HH:mm:ss";
+		            		DateFormat df = new SimpleDateFormat(pattern);
+		            		Date thisDate = pic.getDate().getTime();
+		            		String imageDate = df.format(thisDate);
+		                    setText("Caption: "+pic.getCaption()+"\nDate: "+imageDate);
 		                    setGraphic(imagePic);
 		                }
 					}
 				});
+				
+				choiceTag1.getSelectionModel().clearSelection();
+				choiceTag2.getSelectionModel().clearSelection();
+				txtTag1.clear();
+				txtTag2.clear();
+				choiceAnd.setSelected(false);
+				choiceOr.setSelected(false);
+				dateStart.setValue(null);
+				dateEnd.setValue(null);
 			}
 		});
 		
+		//creating new album based on search results
 		btnCreate.setOnAction(event->{
-			if (txtAlbum.getText() == "")
-				popUpMessage(primaryStage, "Please add an album name");
-			else if (imageList.isEmpty())
-				popUpMessage(primaryStage, "Please select images");
-			else {
-				if (agreeOrDisagree(primaryStage, "Would you like to make the selected songs an album?")) {
-					createAlbum();
-					saveData(userList);
-				}
+			if (agreeOrDisagree(primaryStage, "Would you like to make the selected songs an album?")) {
+				createAlbum();
+				saveData(userList);
+				txtAlbum.clear();
 			}
 		});
 		
+		//going back to User page
 		btnClose.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -144,6 +165,9 @@ public class SearchController {
 		});
 	}
 	
+	/**
+	* Method to search for pictures by dates and/or tag-value pairs
+	*/
 	private void search() {
 		imageList.removeAll();
 		
@@ -206,12 +230,15 @@ public class SearchController {
 		}
 	}
 	
+	/**
+	 * Method to create an album based on search results
+	 */
 	private void createAlbum() {
 		String albumName = txtAlbum.getText();
 		
 		List<Album> userAlbums = currUser.getAlbumList();
 		for (int i = 0; i < userAlbums.size(); i++) {
-			if (albumName.equals(userAlbums.get(i).getTitle())) {
+			if (albumName.toLowerCase().equals(userAlbums.get(i).getTitle().toLowerCase())) {
 				popUpMessage(primaryStage, "You already have an album with the same name");
 				return;
 			}
@@ -224,19 +251,60 @@ public class SearchController {
 		currUser.addAlbum(res);
 	}
 	
+	/**
+	* Method to check whether or not to add the picture based on whether or not it is within the specified date range
+	* 
+	* @param pic The picture that is being checked to see if it has the appropriate dates
+	* @param start start date
+	* @param end end date
+	*/
 	private void checkDate(Picture pic, LocalDate start, LocalDate end) {
 		LocalDate day = LocalDateTime.ofInstant(pic.getDate().toInstant(), pic.getDate().getTimeZone().toZoneId()).toLocalDate();
 		
-		if ((start != null && !day.isBefore(start) && (end != null) && !day.isAfter(end)))
-			imageList.add(pic);
-		else if ((start == null && (end != null) && !day.isAfter(end)))
-			imageList.add(pic);
-		else if ((end == null && (start != null) && !day.isBefore(start)))
-			imageList.add(pic);
-		else if (start == null && end == null)
-			imageList.add(pic);
+		if ((start != null && !day.isBefore(start) && (end != null) && !day.isAfter(end))) {
+			boolean isRepeat = false;
+			for(int i=0; i< imageList.size(); i++) {
+				if(imageList.get(i).getPicture().equals(pic.getPicture()))
+					isRepeat = true;
+			}
+			if(!isRepeat)
+				imageList.add(pic);
+		}
+		else if ((start == null && (end != null) && !day.isAfter(end))) {
+			boolean isRepeat = false;
+			for(int i=0; i< imageList.size(); i++) {
+				if(imageList.get(i).getPicture().equals(pic.getPicture()))
+					isRepeat = true;
+			}
+			if(!isRepeat)
+				imageList.add(pic);
+		}
+		else if ((end == null && (start != null) && !day.isBefore(start))) {
+			boolean isRepeat = false;
+			for(int i=0; i< imageList.size(); i++) {
+				if(imageList.get(i).getPicture().equals(pic.getPicture()))
+					isRepeat = true;
+			}
+			if(!isRepeat)
+				imageList.add(pic);
+		}
+		else if (start == null && end == null) {
+			boolean isRepeat = false;
+			for(int i=0; i< imageList.size(); i++) {
+				if(imageList.get(i).getPicture().equals(pic.getPicture()))
+					isRepeat = true;
+			}
+			if(!isRepeat)
+				imageList.add(pic);
+		}
 	}
 	
+	/**
+	 * method for warning signature
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText Text to show in warning
+	 */
 	private void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -245,6 +313,14 @@ public class SearchController {
 		warning.showAndWait();
 	}
 	
+	/**
+	 * method to allow user to back out of decision
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText text to show what to agree for
+	 * 
+	 * @return true if agreed, false otherwise
+	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);
@@ -262,7 +338,11 @@ public class SearchController {
 		return false;
 	}
 	
-	//method to save User data
+	/**
+	 * method to save User data
+	 * 
+	 * @param userList the list of all users with certain information having been changed
+	 */
 	private void saveData(ArrayList<User> userList) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");

@@ -329,7 +329,7 @@ public class UserController {
 	 * 
 	 * @param search Picture to search for
 	 * @param primaryStage current stage
-	 * @param pictureList the picture list to search in to see if the picture already exists
+	 * @param albumList the picture list to search in to see if the picture already exists
 	 * 
 	 * @return True if it exists in the list, false otherwise
 	 */

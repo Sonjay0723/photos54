@@ -11,7 +11,6 @@ import java.util.Calendar;
 import java.util.Comparator;
 
 public class Picture implements Serializable {
-	
 	/**
 	 * SerialID for Picture Class
 	 * SerializableImage
