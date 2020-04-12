@@ -26,7 +26,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -76,7 +76,7 @@ public class AlbumController {
 	
 	@FXML private Button btnMove;
 	@FXML private Button btnAdd;
-	@FXML private ChoiceBox<String> albumChoice;
+	@FXML private ComboBox<String> albumChoice;
 	
 	ObservableList<Tag> tagList;
 	public int currSlideShowImage = 0;
@@ -127,7 +127,6 @@ public class AlbumController {
 		currUser.addTagType(new TagType("person", true));
 		currUser.addTagType(new TagType("event", false));
 		
-		albumChoice.getItems().add("Choose an Album");
 		for (int i = 0; i < currUser.getAlbumList().size(); i++) {
 			if (!currAlbum.equals(currUser.getAlbumList().get(i)))
 				albumChoice.getItems().add(currUser.getAlbumList().get(i).getTitle());
@@ -136,8 +135,9 @@ public class AlbumController {
 		//set up when user is allowed to delete a picture/tag/move to an album/ add to an album
 		deletePicture.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
 		addTag.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
-		moveToAlbum.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
-		copyToAlbum.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
+		albumChoice.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(Bindings.size(FXCollections.observableArrayList(currUser.getAlbumList())).isEqualTo(1)));
+		btnMove.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(albumChoice.getSelectionModel().selectedItemProperty().isNull()));
+		btnAdd.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(albumChoice.getSelectionModel().selectedItemProperty().isNull()));
 		deleteTag.disableProperty().bind(listViewTag.getSelectionModel().selectedItemProperty().isNull());
 		slideshowNext.disableProperty().bind(Bindings.size(pictureList).isEqualTo(0).or(Bindings.size(pictureList).isEqualTo(1)));
 		slideshowPrevious.disableProperty().bind(Bindings.size(pictureList).isEqualTo(0).or(Bindings.size(pictureList).isEqualTo(1)));
@@ -170,7 +170,7 @@ public class AlbumController {
 				date.setTimeInMillis(tmp.lastModified());
 				
 				Picture newPic = new Picture(thisPic, date, "", name);
-				addPic(newPic, primaryStage, pictureList, currAlbum);
+				addPic(newPic, primaryStage, pictureList, currAlbum, true);
 				saveData(userList);
 				refreshSlideShow(pictureList);
 			}
@@ -302,21 +302,21 @@ public class AlbumController {
 				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
 				
 				deletePic(pictureList, currAlbum);
-				addPic(chosenPic, primaryStage, pictureList, chosenAlbum);
+				addPic(chosenPic, primaryStage, FXCollections.observableArrayList(chosenAlbum.getPictureList()), chosenAlbum, false);
 				saveData(userList);
+				refreshSlideShow(pictureList);
+				albumChoice.setValue(null);
 			}
 		});
 		
 		//copy picture to a new album
 		btnAdd.setOnAction(event->{
-			if(pictureList.isEmpty()) 
-				popUpMessage(primaryStage, "There is no picture to select!");
-			else if (agreeOrDisagree(primaryStage, "Would you like to add " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
+			if (agreeOrDisagree(primaryStage, "Would you like to add " + listViewImg.getSelectionModel().getSelectedItem().getPictureName() 
 					+ " to " + albumChoice.getValue() + "?")) {
 				Album chosenAlbum = currUser.getAlbum(albumChoice.getValue());
 				Picture chosenPic = listViewImg.getSelectionModel().getSelectedItem();
 				
-				addPic(chosenPic, primaryStage, pictureList, chosenAlbum);
+				addPic(chosenPic, primaryStage, FXCollections.observableArrayList(chosenAlbum.getPictureList()), chosenAlbum, false);
 				saveData(userList);
 			}
 		});
@@ -351,16 +351,19 @@ public class AlbumController {
 	 * @param primaryStage the current stage
 	 * @param pictureList The picture list to add a picture to
 	 * @param thisAlbum the current album
+	 * @param forThisAlbum tells if the move to album/copy to album is being done
 	 */
-	public void addPic(Picture newPicture, Stage primaryStage, ObservableList<Picture> pictureList, Album thisAlbum){
+	public void addPic(Picture newPicture, Stage primaryStage, ObservableList<Picture> pictureList, Album thisAlbum, boolean forThisAlbum){
 		
 		if(pictureList.isEmpty()) {
 			
 			pictureList.add(newPicture);
 		
-			listViewImg.setItems(pictureList);
-			listViewImg.getSelectionModel().select(0);
-			whatInfo(pictureList);
+			if(forThisAlbum) {
+				listViewImg.setItems(pictureList);
+				listViewImg.getSelectionModel().select(0);
+				whatInfo(pictureList);
+			}
 			
 			thisAlbum.addPicture(newPicture);
 			
@@ -374,10 +377,12 @@ public class AlbumController {
 					if(i==0) {
 						
 						pictureList.add(0,newPicture);
-						//select Picture
-						listViewImg.setItems(pictureList);
-						listViewImg.getSelectionModel().select(0);
-						whatInfo(pictureList);
+						
+						if(forThisAlbum) {
+							listViewImg.setItems(pictureList);
+							listViewImg.getSelectionModel().select(0);
+							whatInfo(pictureList);
+						}
 						
 						thisAlbum.addPicture(newPicture);
 						
@@ -386,10 +391,12 @@ public class AlbumController {
 					else if(i>=pictureList.size()) {
 						
 						pictureList.add(newPicture);
-						//select Picture
-						listViewImg.setItems(pictureList);
-						listViewImg.getSelectionModel().select(pictureList.size()-1);
-						whatInfo(pictureList);
+
+						if(forThisAlbum) {
+							listViewImg.setItems(pictureList);
+							listViewImg.getSelectionModel().select(pictureList.size()-1);
+							whatInfo(pictureList);
+						}
 						
 						thisAlbum.addPicture(newPicture);
 						
@@ -398,10 +405,12 @@ public class AlbumController {
 					else {
 						
 						pictureList.add(i, newPicture);
-						//select Picture
-						listViewImg.setItems(pictureList);
-						listViewImg.getSelectionModel().select(i);
-						whatInfo(pictureList);
+						
+						if(forThisAlbum) {
+							listViewImg.setItems(pictureList);
+							listViewImg.getSelectionModel().select(i);
+							whatInfo(pictureList);
+						}
 						
 						thisAlbum.addPicture(newPicture);
 						
@@ -414,10 +423,12 @@ public class AlbumController {
 			}
 			
 			pictureList.add(newPicture);
-			//select picture
-			listViewImg.setItems(pictureList);
-			listViewImg.getSelectionModel().select(pictureList.size()-1);
-			whatInfo(pictureList);
+			
+			if(forThisAlbum) {
+				listViewImg.setItems(pictureList);
+				listViewImg.getSelectionModel().select(pictureList.size()-1);
+				whatInfo(pictureList);
+			}
 			
 			thisAlbum.addPicture(newPicture);
 			
