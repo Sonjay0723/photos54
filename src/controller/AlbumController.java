@@ -1,3 +1,8 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package controller;
 
 import java.io.File;
@@ -12,7 +17,6 @@ import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.property.Property;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,7 +26,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
@@ -33,7 +36,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import model.Album;
 import model.Picture;
 import model.SerializableImage;
@@ -42,7 +44,8 @@ import model.TagType;
 import model.User;
 
 public class AlbumController {
-public Stage primaryStage;
+	
+	public Stage primaryStage;
 
 	@FXML private Label albumTitle;
 	
@@ -72,6 +75,16 @@ public Stage primaryStage;
 	ObservableList<Tag> tagList;
 	public int currSlideShowImage = 0;
 	
+	/**
+	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
+	 * The list of pictures for the current album is initialized
+	 * 
+	 * @param primaryStage The current stage
+	 * @param currUser The current User
+	 * @param userList The list of all user
+	 * @param currAlbum The current Album for the Current User
+	 * @param index Index of the Album's picture to be selected
+	 */
 	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Album currAlbum, int index) {
 		
 		this.primaryStage = primaryStage;
@@ -103,6 +116,7 @@ public Stage primaryStage;
 			refreshSlideShow(pictureList);
 		}
 		
+		//add initial tag types
 		currUser.addTagType(new TagType("location", false));
 		currUser.addTagType(new TagType("person", true));
 		currUser.addTagType(new TagType("event", false));
@@ -122,7 +136,10 @@ public Stage primaryStage;
 		else
 			editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull());
 		
+		//add a picture to the album from the User's files
 		addPicture.setOnAction(event->{
+			
+			//User chooses appropriate Image file
 			FileChooser fc = new FileChooser();
 			fc.getExtensionFilters().addAll(
 					new ExtensionFilter("Image Files", "*.bmp", "*.BMP", "*.gif", "*.GIF", "*.jpg", "*.JPG", "*.png",
@@ -132,6 +149,7 @@ public Stage primaryStage;
 					new ExtensionFilter("PNG Files", "*.png", "*.PNG"));
 			File tmp = fc.showOpenDialog(null);
 			
+			//If user chose a picture, add it to the User's current Album's list of pictures
 			if(tmp!=null) {
 				Image img = new Image(tmp.toURI().toString());
 				SerializableImage thisPic = new SerializableImage(img);
@@ -144,34 +162,41 @@ public Stage primaryStage;
 				saveData(userList);
 				refreshSlideShow(pictureList);
 			}
+			//otherwise, display values of currently selected picture
 			else
 				whatInfo(pictureList);
 		});
 		
+		//Delete the selected picture from the picture list
 		deletePicture.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+" from the list?")){
 				deletePic(pictureList, currAlbum);
 				saveData(userList);
 				refreshSlideShow(pictureList);
+				//update binding based on what is selected
 				if(!pictureList.isEmpty()) {
 					BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
 					editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
 				}
 			}
+			else
+				whatInfo(pictureList);
 		});
 		
+		//delete the selected tag of the selected picture
 		deleteTag.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like to remove "+listViewTag.getSelectionModel().getSelectedItem().toString()+" from the list?")){
 				deleteTag(listViewImg.getSelectionModel().getSelectedItem());
 				saveData(userList);
-				
 			}
 		});
 		
+		//edit the caption of the selected picture
 		editCaption.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like recaption "+listViewImg.getSelectionModel().getSelectedItem().getPictureName())){
 				editCap(pictureList);
 				saveData(userList);
+				//update binding based on whatever is selected
 				BooleanBinding hasChanged = Bindings.equal(showCaption.textProperty(), listViewImg.getSelectionModel().getSelectedItem().getCaption());
 				editCaption.disableProperty().bind(listViewImg.getSelectionModel().selectedItemProperty().isNull().or(hasChanged));
 			}
@@ -179,6 +204,7 @@ public Stage primaryStage;
 				whatInfo(pictureList);
 		});
 		
+		//add a tag to the selected picture from another scene
 		addTag.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Would you like to add tag(s) for "+listViewImg.getSelectionModel().getSelectedItem().getPictureName()+"?")) {
 				this.primaryStage.close();
@@ -200,6 +226,7 @@ public Stage primaryStage;
 			}
 		});
 		
+		//Go to the next picture in the picture list
 		slideshowNext.setOnAction(event->{
 			if(currSlideShowImage+1 >= pictureList.size()) 
 				currSlideShowImage = 0;
@@ -216,6 +243,7 @@ public Stage primaryStage;
 			
 		});
 		
+		//go to the previous picture in the picture list
 		slideshowPrevious.setOnAction(event->{
 			if(currSlideShowImage-1 <0) 
 				currSlideShowImage = pictureList.size()-1;
@@ -232,6 +260,7 @@ public Stage primaryStage;
 			
 		});
 		
+		//go back to the user's page with the list of albums and other info
 		toUserPage.setOnAction(event->{
 			this.primaryStage.close();
 			FXMLLoader loader = new FXMLLoader();
@@ -251,6 +280,7 @@ public Stage primaryStage;
 			}
 		});
 		
+		//logout to login page
 		logout.setOnAction(event->{
 			this.primaryStage.close();
 			
@@ -273,6 +303,14 @@ public Stage primaryStage;
 		
 	}
 	
+	/**
+	 * Add a picture to the Picture list for the current album for the current user
+	 * 
+	 * @param newPicture Picture to add to picture list
+	 * @param primaryStage the current stage
+	 * @param pictureList The picture list to add a picture to
+	 * @param thisAlbum the current album
+	 */
 	public void addPic(Picture newPicture, Stage primaryStage, ObservableList<Picture> pictureList, Album thisAlbum){
 		
 		if(pictureList.isEmpty()) {
@@ -295,7 +333,7 @@ public Stage primaryStage;
 					if(i==0) {
 						
 						pictureList.add(0,newPicture);
-						//select User
+						//select Picture
 						listViewImg.setItems(pictureList);
 						listViewImg.getSelectionModel().select(0);
 						whatInfo(pictureList);
@@ -307,7 +345,7 @@ public Stage primaryStage;
 					else if(i>=pictureList.size()) {
 						
 						pictureList.add(newPicture);
-						//select User
+						//select Picture
 						listViewImg.setItems(pictureList);
 						listViewImg.getSelectionModel().select(pictureList.size()-1);
 						whatInfo(pictureList);
@@ -319,7 +357,7 @@ public Stage primaryStage;
 					else {
 						
 						pictureList.add(i, newPicture);
-						//select User
+						//select Picture
 						listViewImg.setItems(pictureList);
 						listViewImg.getSelectionModel().select(i);
 						whatInfo(pictureList);
@@ -348,11 +386,17 @@ public Stage primaryStage;
 		return;
 	}
 	
+	/**
+	 * Delete the current picture from the album for the current user
+	 * 
+	 * @param pictureList the picture list from where to delete the selected picture from
+	 * @param thisAlbum the current album that the picture is in
+	 */
 	public void deletePic(ObservableList<Picture> pictureList, Album thisAlbum){
 		
 		//delete current Picture
 		int currIndex = listViewImg.getSelectionModel().getSelectedIndex();
-		thisAlbum.removePicture(listViewImg.getSelectionModel().getSelectedItem().getPictureName());
+		thisAlbum.removePicture(listViewImg.getSelectionModel().getSelectedItem());
 		pictureList.remove(currIndex);
 		listViewImg.setItems(pictureList);
 		
@@ -379,6 +423,11 @@ public Stage primaryStage;
 		return;
 	}
 	
+	/**
+	 * Delete the selected tag of the current selected picture
+	 * 
+	 * @param thisPicture the current selected picture
+	 */
 	public void deleteTag(Picture thisPicture){
 		
 		//delete current Picture
@@ -400,20 +449,24 @@ public Stage primaryStage;
 		return;
 	}
 	
+	/**
+	 * Method to Edit the caption of the current selected picture
+	 * 
+	 * @param pictureList the list of pictures which has the selected picture is from
+	 */
 	public void editCap(ObservableList<Picture> pictureList) {
 		Picture currPic = pictureList.get((listViewImg.getSelectionModel().getSelectedIndex()));
 		
 		String cap = showCaption.getText();
-		String currCap = currPic.getCaption();
-		
-		if(cap.equals(currCap)) {
-			popUpMessage(primaryStage,"The information for "+currPic.getPictureName()+"'s caption has not been edited!");
-			return;
-		}
 		
 		currPic.setCaption(cap);
 	}
 	
+	/**
+	 * Refresh the contents of the slideshow, done after add/delete/etc of any picture in the picture list
+	 * 
+	 * @param pictureList the updated picture list that contains the images to show in the slideshow
+	 */
 	public void refreshSlideShow(ObservableList<Picture> pictureList) {
 		if(!pictureList.isEmpty()) {
 			if(currSlideShowImage>=pictureList.size())
@@ -428,11 +481,20 @@ public Stage primaryStage;
 			slideshowImage.setImage(null);
 	}
 	
+	/**
+	 * Method to Check if the picture is already in the picture list
+	 * 
+	 * @param search Picture to search for
+	 * @param primaryStage current stage
+	 * @param pictureList the picture list to search in to see if the picture already exists
+	 * 
+	 * @return True if it exists in the list, false otherwise
+	 */
 	public boolean inListPic(Picture search, Stage primaryStage, ObservableList<Picture> pictureList){
 		if(pictureList.isEmpty())
 			return false;
 		for(int i=0; i<pictureList.size(); i++) {
-			if(pictureList.get(i).compareTo(search) == 0) {
+			if(pictureList.get(i).getPicture().equals(search.getPicture())) {
 				popUpMessage(primaryStage, "This Entry Already Exists in the List!");
 				return true;
 			}
@@ -440,7 +502,12 @@ public Stage primaryStage;
 		return false;
 	}
 	
-	//method for warning signature
+	/**
+	 * method for warning signature
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText Text to show in warning
+	 */
 	public void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -449,7 +516,12 @@ public Stage primaryStage;
 		warning.showAndWait();
 	}
 
-	//method to display Image values
+	/**
+	 * method to display values depending on what is selected in appropriate location
+	 * Image,Caption,Date,Tag List of current selected Picture
+	 * 
+	 * @param photoList the list from where items are selected
+	 */
 	public void whatInfo(ObservableList<Picture> photoList) {
 		
 		if(!photoList.isEmpty()) {
@@ -481,7 +553,14 @@ public Stage primaryStage;
 		}
 	}
 	
-	//method to allow user to back out of decision
+	/**
+	 * method to allow user to back out of decision
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText text to show what to agree for
+	 * 
+	 * @return true if agreed, false otherwise
+	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);
@@ -499,7 +578,11 @@ public Stage primaryStage;
 		return false;
 	}
 		
-	//method to save User data
+	/**
+	 * method to save User data
+	 * 
+	 * @param userList the list of all users with certain information having been changed
+	 */
 	private void saveData(ArrayList<User> userList) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");

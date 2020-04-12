@@ -1,3 +1,8 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package controller;
 
 import java.io.*;
@@ -27,6 +32,13 @@ public class LoginController {
 	
 	ArrayList<User> users;
 	
+	/**
+	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, etc.) 
+	 * The Original list of TagTypes for the specific User is initialized
+	 * If this is the first time running the application, a dat file where all information is to be saved + a stock user is created
+	 * 
+	 * @param primaryStage Current stage
+	 */
 	public void start(Stage primaryStage) {
 		
 		this.primaryStage = primaryStage;
@@ -34,6 +46,7 @@ public class LoginController {
 		//create base directory if it does not exist
 		File baseFile = new File("data/dat");
 		
+		//If first time running, create stock user
 		if(!baseFile.exists()) {
 			
 			try {
@@ -75,8 +88,10 @@ public class LoginController {
 			}
 		}
 		
+		//Set button disable/enable properties
 		enter.disableProperty().bind(Bindings.isEmpty(username.textProperty()));
 		
+		//login to specific user
 		enter.setOnAction(event->{
 			if(username.getText().isEmpty())
 				popUpMessage(primaryStage, "The Username Text Field is empty!");
@@ -87,6 +102,11 @@ public class LoginController {
 		
 	}
 	
+	/**
+	 * Login to the specific user entered
+	 * 
+	 * @param primaryStage current stage
+	 */
 	@SuppressWarnings("unchecked")
 	public void loginToPage(Stage primaryStage) {
 		
@@ -102,7 +122,7 @@ public class LoginController {
 			User user = null;
 
 			for (User currentUser : users) {
-				if (currentUser.getUsername().equals(username.getText())) {
+				if (currentUser.getUsername().toLowerCase().equals(username.getText().toLowerCase())) {
 					user = currentUser;
 				}
 			}
@@ -162,7 +182,12 @@ public class LoginController {
 		return;
 	}
 	
-	//method for warning signature
+	/**
+	 * method for warning signature
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText Text to show in warning
+	 */
 	public void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -171,7 +196,14 @@ public class LoginController {
 		warning.showAndWait();
 	}
 	
-	//method for confirmations
+	/**
+	 * method to allow user to back out of decision
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText text to show what to agree for
+	 * 
+	 * @return true if agreed, false otherwise
+	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);

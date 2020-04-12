@@ -1,53 +1,94 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package model;
 
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 public class Album implements Serializable {
 	
-	private static final long serialVersionUID = 1891567810783724951L;
+	/**
+	 * SerialID for Album Class
+	 * Title of album
+	 * Arraylist of pictures within album
+	 */
+	private static final long serialVersionUID = -3937601520397862461L;
 	public String title;
 	public ArrayList<Picture> pictureList = new ArrayList<Picture>();
 	
+	/**
+	 * Initialize Album
+	 * 
+	 * @param title of Album
+	 */
 	public Album(String title) {
 		this.title = title;
 	}
 	
+	/**
+	 * get the album title
+	 * 
+	 * @return Title of album
+	 */
 	public String getTitle() {
 		return title;
 	}
 	
+	/**
+	 * set new title
+	 * 
+	 * @param x new name of album
+	 */
 	public void setTitle(String x) {
 		this.title = x;
 	}
 	
+	/**
+	 * Get the list of pictures in the album
+	 * 
+	 * @return list of pictures in the album
+	 */
 	public ArrayList<Picture> getPictureList(){
 		return pictureList;
 	}
 	
+	/**
+	 * Set the picture list of the album to the one provided
+	 * 
+	 * @param newPictureList the picture list to set the album picture list to
+	 */
 	public void setList(ArrayList<Picture> newPictureList) {
 		this.pictureList = newPictureList;
 	}
 	
+	/**
+	 * Add a picture to the album's picture list
+	 * 
+	 * @param newPicture picture to add to the album's picture list
+	 */
 	public void addPicture(Picture newPicture) {
 		pictureList.add(newPicture);
 		Comparator<Picture> comparator = Comparator.comparing(Picture::getPictureName);
 		pictureList.sort(comparator);
 	}
 	
-	public void removePicture(String thisPicture) {
+	/**
+	 * delete a picture from the album's picture list
+	 * 
+	 * @param thisPicture Picture to delete
+	 */
+	public void removePicture(Picture thisPicture) {
 		int position = 0;
 		for(int i=0; i<pictureList.size(); i++) {
-			if(thisPicture.equals(pictureList.get(i).getPictureName())) {
+			if(thisPicture.getPicture().equals(pictureList.get(i).getPicture())) {
 				position = i;
 				break;
 			}
@@ -55,17 +96,27 @@ public class Album implements Serializable {
 		pictureList.remove(position);
 	}
 	
-	public Picture getPicture(String name) {
-		Picture searchFor = null;
+	/**
+	 * Get the picture
+	 * 
+	 * @param name the picture to find
+	 * 
+	 * @return the Picture
+	 */
+	public SerializableImage getPicture(Picture name) {
+		SerializableImage searchFor = null;
 		for(int i=0; i<this.pictureList.size(); i++) {
-			if(this.pictureList.get(i).getPictureName().equals(name)) {
-				searchFor = this.pictureList.get(i);
+			if(this.pictureList.get(i).getPicture().equals(name.getPicture())) {
+				searchFor = this.pictureList.get(i).getPicture();
 				break;
 			}
 		}
 		return searchFor;
 	}
 	
+	/**
+	 * Override Equals method for Album
+	 */
 	@Override
 	public boolean equals(Object other) {
 		if(other==null || !(other instanceof Album))
@@ -75,15 +126,29 @@ public class Album implements Serializable {
 		return curr.getTitle().toLowerCase().equals(title.toLowerCase());
 	}
 	
+	/**
+	 * Override hashCode for Album
+	 */
 	@Override
 	 public int hashCode() {
 		 return Objects.hash(title);
 	 }
 	
+	/**
+	 * compareTo Method for album compares titles (in lower case)
+	 * 
+	 * @param currAlbum Current album to compare
+	 * 
+	 * @return 0 if equal, any number >/< 0 otherwise depending on order of album title's
+	 */
 	public int compareTo(Album currAlbum) {
 		return this.getTitle().toLowerCase().compareTo(currAlbum.getTitle().toLowerCase());
 	}
 	
+	/**
+	 * toString method for album to that album display is legible
+	 * Has album title, date rage, and number of pictures in the album
+	 */
 	public String toString() {
 		String ret = this.getTitle();
 		ret += "\n"+Integer.toString(this.pictureList.size())+" Photos";

@@ -1,3 +1,8 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package controller;
 
 import java.io.FileOutputStream;
@@ -7,7 +12,6 @@ import java.util.Optional;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -46,6 +50,18 @@ public class AddTagController {
 	ObservableList<TagType> tagTypeList;
 	final ToggleGroup howMany = new ToggleGroup();
 	
+	/**
+	 * 
+	 * All actions are handled for Buttons + FXML fields(When to disable/enable them, what to do when pressed, logging out, etc.) 
+	 * The Original list of TagTypes for the specific User is initialized
+	 * 
+	 * @param primaryStage Current view
+	 * @param currUser The Current User
+	 * @param userList The List of all users
+	 * @param currPicture The current picture for which to add tags for
+	 * @param currAlbum The Current Album the picture is In
+	 * @param index The index of the Current Picture in the Current Album
+	 */
 	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Picture currPicture, Album currAlbum, int index) {
 		
 		this.primaryStage = primaryStage;
@@ -69,34 +85,52 @@ public class AddTagController {
         .getSelectionModel()
         .selectedIndexProperty();
 		
+		//selecting first value in list
 		if(!tagTypeList.isEmpty()) {
 			typeView.setItems(tagTypeList);
 			typeView.getSelectionModel().select(0);
 		}
 		
+		//creating a new tag type
 		createNewType.setOnAction(event->{
 			
+			//make sure Tag Type does not already exist
 			boolean isMulti = multiVal.isSelected();
 			TagType newTagName = new TagType(newTag.getText(), isMulti);
-			tagTypeList.add(newTagName);
-			typeView.setItems(tagTypeList);
 			
-			for(int i=0; i< tagTypeList.size(); i++) {
-				if(tagTypeList.get(i).getTagName().equals(newTagName.getTagName())) {
-					typeView.getSelectionModel().select(i);
-					break;
+			if(agreeOrDisagree(primaryStage, "Do you want to add "+newTagName.toString()+" to the list of Tag Types?")) {
+			
+				for(int i=0; i<tagTypeList.size(); i++) {
+					if(newTag.getText().toLowerCase().equals(tagTypeList.get(i).getTagName().toLowerCase())) {
+						popUpMessage(primaryStage, "This Tag Type Already Exists!");
+						newTag.clear();
+						return;
+					}
 				}
+				
+				//adding tag to User + Observable List
+				tagTypeList.add(newTagName);
+				typeView.setItems(tagTypeList);
+				
+				for(int i=0; i< tagTypeList.size(); i++) {
+					if(tagTypeList.get(i).getTagName().equals(newTagName.getTagName())) {
+						typeView.getSelectionModel().select(i);
+						break;
+					}
+				}
+				
+				currUser.addTagType(newTagName);
+				saveData(userList);
 			}
-			
-			currUser.addTagType(newTagName);
-			saveData(userList);
 			
 			newTag.clear();
 			
 		});
 		
+		//Adding a tag to the Image
 		addTag.setOnAction(event->{
 			
+			//Make sure the tag is not a single value tag if it already exists in the current pictures tag list
 			boolean canAdd = true;
 			TagType currTag = typeView.getSelectionModel().getSelectedItem();
 			for(int i=0; i<currPicture.getTagList().size(); i++) {
@@ -106,6 +140,7 @@ public class AddTagController {
 			
 			if(!canAdd)
 				popUpMessage(primaryStage, currTag.getTagName()+" is only allowed to have one value, and "+currPicture.getPictureName()+" already has one");
+			//add tag to the current users list of tags if User agrees
 			else {
 				Tag newTag = new Tag(currTag.getTagName(), newValue.getText(), currTag.getMulti());
 				if(agreeOrDisagree(primaryStage, "Would you like to add the tag "+newTag.toString()+" to "+currPicture.getPictureName()+"?")) {
@@ -117,6 +152,7 @@ public class AddTagController {
 			newValue.clear();
 		});
 		
+		//Going back to album page once user is done adding pictures
 		cancelBtn.setOnAction(event->{
 			if(agreeOrDisagree(primaryStage, "Are you done adding tags?")){
 				this.primaryStage.close();
@@ -140,7 +176,12 @@ public class AddTagController {
 		});
 	}
 	
-	//method for warning signature
+	/**
+	 * method for warning signature
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText Text to show in warning
+	 */
 	public void popUpMessage(Stage primaryStage, String displayText) {
 		Alert warning = new Alert(AlertType.WARNING);
 		warning.initOwner(primaryStage);
@@ -149,7 +190,14 @@ public class AddTagController {
 		warning.showAndWait();
 	}
 	
-	//method to allow user to back out of decision
+	/**
+	 * method to allow user to back out of decision
+	 * 
+	 * @param primaryStage current stage
+	 * @param displayText text to show what to agree for
+	 * 
+	 * @return true if agreed, false otherwise
+	 */
 	public boolean agreeOrDisagree(Stage primaryStage, String displayText) {
 		Alert sayYes = new Alert(AlertType.CONFIRMATION);
 		sayYes.initOwner(primaryStage);
@@ -167,7 +215,11 @@ public class AddTagController {
 		return false;
 	}
 		
-	//method to save User data
+	/**
+	 * method to save User data
+	 * 
+	 * @param userList the list of all users with certain information having been changed
+	 */
 	private void saveData(ArrayList<User> userList) {
 		try {
 			FileOutputStream fileOutputStream = new FileOutputStream("data/dat");

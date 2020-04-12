@@ -1,3 +1,8 @@
+/**
+ * @author Dhrishti hazari
+ * @author Jayson Pitta
+ */
+
 package model;
 
 import java.io.Serializable;
@@ -9,10 +14,21 @@ import javafx.scene.image.WritableImage;
 
 public class SerializableImage implements Serializable {
 		
-	private static final long serialVersionUID = -1266447099158556616L;
+	/**
+	 * SerialID for SerializableImage Class
+	 * Width of SerializableImage
+	 * Height of SerializableImage
+	 * 2D Array of pictures
+	 */
+	private static final long serialVersionUID = 6554568434893643354L;
 	private int width, height;
 	private int[][] pixels;
 
+	/**
+	 * Initialize SerializableImage
+	 * 
+	 * @param image to turn into a SerializableImage
+	 */
 	public SerializableImage(Image image) {
 		width = (int)image.getWidth();
 		height = (int)image.getHeight();
@@ -24,6 +40,11 @@ public class SerializableImage implements Serializable {
 				pixels[currentWidth][currentHeight] = reader.getArgb(currentWidth, currentHeight);
 	}
 
+	/**
+	 * Get the Image from the SerializableImage
+	 * 
+	 * @return the Image
+	 */
 	public Image getImage() {
 		WritableImage image = new WritableImage(width, height);
 		
@@ -35,18 +56,40 @@ public class SerializableImage implements Serializable {
 		return image;
 	}
 
+	/**
+	 * Get the width of the image
+	 * 
+	 * @return the width of the image
+	 */
 	public int getWidth() {
 		return width;
 	}
 
+	/**
+	 * Get the height of the image
+	 * 
+	 * @return the height of the image
+	 */
 	public int getHeight() {
 		return height;
 	}
 	
+	/**
+	 * Get the pixels of the image 
+	 * 
+	 * @return a 2D array of the pixels of the image 
+	 */
 	public int[][] getPixels() {
 		return pixels;
 	}
 	
+	/**
+	 * equals method for SerializableImage by comparing pixels
+	 * 
+	 * @param image the SerializableImage to see if it is equal to
+	 * 
+	 * @return true if equal, false otherwise
+	 */
 	public boolean equals(SerializableImage image) {
 		if (width != image.getWidth() || height != image.getHeight())
 			return false;
