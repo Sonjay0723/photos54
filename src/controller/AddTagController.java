@@ -61,8 +61,9 @@ public class AddTagController {
 	 * @param currPicture The current picture for which to add tags for
 	 * @param currAlbum The Current Album the picture is In
 	 * @param index The index of the Current Picture in the Current Album
+	 * @param albumIndex is the index of the current album for the user page
 	 */
-	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Picture currPicture, Album currAlbum, int index) {
+	public void start(Stage primaryStage, User currUser, ArrayList<User> userList, Picture currPicture, Album currAlbum, int index, int AlbumIndex) {
 		
 		this.primaryStage = primaryStage;
 		
@@ -164,7 +165,7 @@ public class AddTagController {
 		            AlbumController albumView = loader.getController();
 		            Stage stage = new Stage();
 		            
-		            albumView.start(stage, currUser, userList, currAlbum, index);
+		            albumView.start(stage, currUser, userList, currAlbum, index, AlbumIndex);
 		            Scene scene = new Scene(root);
 		            stage.setScene(scene);
 		            stage.show();
