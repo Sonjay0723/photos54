@@ -133,7 +133,7 @@ public class AlbumController {
                 	imagePic.setImage(pic.getPicture().getImage());
                 	imagePic.setPreserveRatio(true);
                 	imagePic.setFitHeight(60);
-                    setText(pic.getCaption());
+                    setText(pic.getPictureName()+"\nCaption:\n"+pic.getCaption());
                     setGraphic(imagePic);
                 }
 			}
@@ -249,7 +249,7 @@ public class AlbumController {
 		                	imagePic.setImage(pic.getPicture().getImage());
 		                	imagePic.setPreserveRatio(true);
 		                	imagePic.setFitHeight(60);
-		                    setText(pic.getCaption());
+		                    setText(pic.getPictureName()+"\nCaption:\n"+pic.getCaption());
 		                    setGraphic(imagePic);
 		                }
 					}
@@ -435,7 +435,7 @@ public class AlbumController {
 					                	imagePic.setImage(pic.getPicture().getImage());
 					                	imagePic.setPreserveRatio(true);
 					                	imagePic.setFitHeight(60);
-					                    setText(pic.getCaption());
+					                    setText(pic.getPictureName()+"\nCaption:\n"+pic.getCaption());
 					                    setGraphic(imagePic);
 					                }
 								}
@@ -466,7 +466,7 @@ public class AlbumController {
 					                	imagePic.setImage(pic.getPicture().getImage());
 					                	imagePic.setPreserveRatio(true);
 					                	imagePic.setFitHeight(60);
-					                    setText(pic.getCaption());
+					                    setText(pic.getPictureName()+"\nCaption:\n"+pic.getCaption());
 					                    setGraphic(imagePic);
 					                }
 								}
@@ -497,7 +497,7 @@ public class AlbumController {
 					                	imagePic.setImage(pic.getPicture().getImage());
 					                	imagePic.setPreserveRatio(true);
 					                	imagePic.setFitHeight(60);
-					                    setText(pic.getCaption());
+					                    setText(pic.getPictureName()+"\nCaption:\n"+pic.getCaption());
 					                    setGraphic(imagePic);
 					                }
 								}
@@ -532,7 +532,7 @@ public class AlbumController {
 		                	imagePic.setImage(pic.getPicture().getImage());
 		                	imagePic.setPreserveRatio(true);
 		                	imagePic.setFitHeight(60);
-		                    setText(pic.getCaption());
+		                    setText(pic.getPictureName()+"\nCaption:\n"+pic.getCaption());
 		                    setGraphic(imagePic);
 		                }
 					}
