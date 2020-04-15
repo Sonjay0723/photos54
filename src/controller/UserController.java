@@ -30,6 +30,15 @@ import javafx.stage.Stage;
 import model.Album;
 import model.User;
 
+/**
+ * 
+ * Display Albums for specific user
+ * Add Albums
+ * Delete Albums
+ * Rename Albums
+ * Search for images
+ *
+ */
 public class UserController {
 	
 	@FXML ListView<Album> listView;

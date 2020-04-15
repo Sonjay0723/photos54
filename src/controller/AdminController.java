@@ -26,6 +26,13 @@ import javafx.scene.image.Image;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
+/**
+ * 
+ * deleting Users
+ * Adding Users
+ *logging out
+ *
+ */
 public class AdminController {
 	
 	@FXML ListView<User> listView;

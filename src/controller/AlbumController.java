@@ -46,6 +46,17 @@ import model.Tag;
 import model.TagType;
 import model.User;
 
+/**
+ * 
+ * Adding Images
+ * Deleting Images
+ * Adding Tags to selected Image by re-directing to addTagController
+ * deleting tags to selected image
+ * Slideshow next/previous
+ * Going back to User Page that contains current album
+ * Logout
+ *
+ */
 public class AlbumController {
 	
 	public Stage primaryStage;

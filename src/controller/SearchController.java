@@ -26,6 +26,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
+/**
+ * 
+ * Search by Tag-value
+ * Search by date range
+ * Display results in listview image results
+ *
+ */
 public class SearchController {
 	
 	private ObservableList<Picture> imageList = FXCollections.observableArrayList();

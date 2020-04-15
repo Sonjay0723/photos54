@@ -36,6 +36,13 @@ import model.Tag;
 import model.TagType;
 import model.User;
 
+/**
+ * 
+ * Creating new multiple value/single value tag types
+ * Adding Tag-value pairs to a specific image
+ * Going back to the album page that contains the image
+ *
+ */
 public class AddTagController {
 	
 	public Stage primaryStage;

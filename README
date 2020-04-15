@@ -35,11 +35,13 @@ A user controller that displays a list of albums for the specific user
 	-Logout
 A search controller that allows the user to search by Date range and/or tag-value pair(s)
 	-Date range option
+		If start date is not chosen, searches from the very first possible date range
+		If end date is not chosen, searches TO the very last possible date range
 	-Tag-Value pair option
 	-And/Or if wanting to search by another Tag-Value pair
-	-ListView of Image earch results
+	-ListView of Image Display for search results
 		if the same picture is duplicated across different albums(based in pixels not name of the image), it is only displayed once
-	-Button to create an Album Based on search results
+	-Button to create an Album Based on search results(Only one copy of each picture)
 	-Back button to go back to User's page
 	-Logout Button
 An Album controller that displays a listView of Images, a slideshow of all images in the Album, a display view for The Image, Caption, Date, and tag-value pairs of the selected image
